@@ -1,7 +1,9 @@
 package controladores;
 
+import controladores.exceptions.*;
 import jakarta.persistence.*;
 import java.util.*;
+import javax.swing.JOptionPane;
 import modelos.*;
 
 /**
@@ -30,15 +32,28 @@ public class ctrlJpaAutor {
     }
     
     //Metodo para crear un autor
-    public void crear(Autor autor){
-        if(autor.getLibrosSet() == null){
-            autor.setLibrosSet(new HashSet<Libro>());
-        }
+    public void crear(String nombre, Set<Libro>conjuntoLibros){
+        Autor autor = new Autor(nombre, conjuntoLibros);
         EntityManager em = null;
         try{
             em = getEntityManager();
             em.getTransaction().begin();
+            Set<Libro> librosAniadir = new HashSet<Libro>();
+            for(Libro l : autor.getLibrosSet()){
+                l = (Libro)em.getReference(Libro.class, l.getIdLibros());
+                librosAniadir.add(l);
+            }
+            autor.setLibrosSet(librosAniadir);
             em.persist(autor);
+            for(Libro l : autor.getLibrosSet()){
+                Autor antiguoAutor = l.getAutor();
+                l.setAutor(autor);
+                l = (Libro)em.merge(l);
+                if(antiguoAutor != null){
+                    antiguoAutor.getLibrosSet().remove(l);
+                    antiguoAutor = (Autor) em.merge(antiguoAutor);
+                }
+            }
             em.getTransaction().commit();
         }finally{
             em.close();
@@ -46,12 +61,11 @@ public class ctrlJpaAutor {
     }
     
     //Metodo para dar de baja un autor
-    public void baja(Object idAutor){
-        Autor autor;
+    public void baja(Autor autor){
         EntityManager em = null;
         try{
             em = getEntityManager();
-            autor = em.getReference(Autor.class, idAutor);
+            autor.getIdAutor();
             em.getTransaction().begin();
             em.remove(autor);
             em.getTransaction().commit();
@@ -111,5 +125,19 @@ public class ctrlJpaAutor {
             em.close();
         }
         return listaAutores;
+    }
+    
+    //Metodo para obtener un autor dado su id
+    public Autor obtenerAutorXId(Object id){
+        //Creamos el EM 
+        EntityManager em = null;
+        Autor autor = null;
+        try{
+            em = getEntityManager();
+            autor = em.find(Autor.class, id);
+        }finally{
+            em.close();
+        }
+        return autor;
     }
 }

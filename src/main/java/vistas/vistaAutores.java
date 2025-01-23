@@ -1,6 +1,7 @@
 package vistas;
 
 import controladores.*;
+import controladores.exceptions.NonexistentEntityException;
 import jakarta.persistence.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -247,11 +248,19 @@ public class vistaAutores extends javax.swing.JFrame {
         if(jTableAutores.getSelectedRow() == -1){
             JOptionPane.showMessageDialog(null, "Seleccione un autor de la tabla para dar de baja");
         }else{
-            int selec = JOptionPane.showConfirmDialog(null, "¿Seguro que desea borrar el autor seleccionado? "
-                    + "También se borraran los libros asociados a este autor", "Confirmación", JOptionPane.YES_NO_OPTION);
+            int selec = JOptionPane.showConfirmDialog(null, "¿Seguro que desea borrar el autor seleccionado?", "Confirmación", JOptionPane.YES_NO_OPTION);
             if(selec == JOptionPane.YES_OPTION){
-                Object autor = modelAutores.getValueAt(jTableAutores.getSelectedRow(), 0);
-                
+                Object idAutor = modelAutores.getValueAt(jTableAutores.getSelectedRow(), 0);
+                Autor autor = ctrlAutores.obtenerAutorXId(idAutor);
+                if(autor.getLibrosSet().size() == 0){
+                    JOptionPane.showMessageDialog(null, "No se pueden borrar autores que tengan libros");
+                }else{
+                    try {
+                        ctrlAutores.baja(autor);
+                    } catch (NonexistentEntityException ex) {
+                        JOptionPane.showMessageDialog(null, "No se encuentra ningún autor que coincida");
+                    }
+                }
             }else{
                 JOptionPane.showMessageDialog(null, "Baja cancelada");
             }

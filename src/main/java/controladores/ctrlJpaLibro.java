@@ -28,6 +28,7 @@ public class ctrlJpaLibro {
         return this.emf.createEntityManager();
     }
     
+    //Metodo para obtener las categoríoas de un libro
     public Set<Categoria> obtenerCategoriasLibro (Object nom){
         EntityManager em = null;
         Set<Categoria> listaCategoriasLibros;
@@ -45,5 +46,38 @@ public class ctrlJpaLibro {
             em.close();
         }
         return listaCategoriasLibros;
+    }
+    
+    //Metodo para obtener los libros
+    public List<Libro> obtenerAllLibros(){
+        //Creamos el EM y una lista para guardar el resultado de la consulta
+        EntityManager em = null;
+        List<Libro> listaLibros;
+        try{
+            //Inicializamos el em y generamos una query para la consulta
+            em = getEntityManager();
+            Query consulta = em.createNamedQuery("Libros.findAll");
+            //Guardamos los datos de la lista
+            listaLibros = consulta.getResultList();
+        }finally{
+            em.close();
+        }
+        return listaLibros;
+    } 
+    
+    //Metodo para obtener un libro dado su id
+    public Libro obtenerLibroXId(Object id){
+        //Creamos el EM y una onjeto para guardar el resultado de la consulta
+        EntityManager em = null;
+        Libro libro = null;
+        try{
+            //Inicializamos el em 
+            em = getEntityManager();
+            //Guardamos los datos en el objeto
+            libro = em.find(Libro.class, id);
+        }finally{
+            em.close();
+        }
+        return libro;
     }
 }
