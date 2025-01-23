@@ -52,13 +52,11 @@ public class ctrlJpaAutor {
         Set<Libro> listaLibrosAutor;
         Autor a = new Autor();
         try{
-            //Inicializamos el em y generamos una query para la consulta
+            //Inicializamos el em y buscamos el autor
             em = getEntityManager();
-            Query consulta = em.createNamedQuery("Autores.findByIdAutor");
-            consulta.setParameter("idAutor", idAutor);
+            a = em.find(Autor.class, idAutor);
             //Guardamos los datos de la lista
-            a = (Autor)consulta.getSingleResult();
-            System.out.println(a.getLibrosSet().size());
+            for(Libro l : a.getLibrosSet()){}
             listaLibrosAutor = a.getLibrosSet();
         }finally{
             em.close();

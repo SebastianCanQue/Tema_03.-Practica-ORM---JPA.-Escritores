@@ -252,9 +252,7 @@ public class vistaAutores extends javax.swing.JFrame {
     private void rellenarTablaLibros(Set<Libro> colecLibros) {
         modelLibros.setRowCount(0);
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        for(Iterator it = colecLibros.iterator(); it.hasNext();){
-            Libro l = (Libro) it.next();
-            //System.out.println(l.getAutor());
+        for(Libro l : colecLibros){
             Object[] fila = {l.getTitulo(), sdf.format(l.getFechaPublicacion()), l.getPrecio()};
             modelLibros.addRow(fila);
         }
