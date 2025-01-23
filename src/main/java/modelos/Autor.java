@@ -14,7 +14,8 @@ import java.util.Set;
 @NamedQueries({
     @NamedQuery(name = "Autores.findAll", query = "SELECT a FROM Autor a"),
     @NamedQuery(name = "Autores.findByIdAutor", query = "SELECT a FROM Autor a WHERE a.idAutor = :idAutor"),
-    @NamedQuery(name = "Autores.findByNomAutor", query = "SELECT a FROM Autor a WHERE a.nomAutor = :nomAutor")})
+    @NamedQuery(name = "Autores.findByNomAutor", query = "SELECT a FROM Autor a WHERE a.nomAutor = :nomAutor"),
+    @NamedQuery(name = "Autores.findByCateg", query = "SELECT a FROM Autor a JOIN a.librosSet l JOIN l.categoriasSet c WHERE c.nomCategoria = :nomCategoria")})
 public class Autor implements Serializable {
 
     private static final long serialVersionUID = 1L;

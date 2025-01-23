@@ -1,6 +1,6 @@
 package vistas;
 
-import controladores.ctrlJpaAutor;
+import controladores.*;
 import jakarta.persistence.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,17 +18,21 @@ import modelos.*;
 public class vistaAutores extends javax.swing.JFrame {
     
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("uniPersistencia");;
-    private ctrlJpaAutor ctrlAutores;
+    //Controladores de las clases
+    private ctrlJpaAutor ctrlAutores = new ctrlJpaAutor(emf);
+    private ctrlJpaCategoria ctrlCateg = new ctrlJpaCategoria(emf);
+    private ctrlJpaLibro ctrlLibro = new ctrlJpaLibro(emf);
     //Modelos de las tablas
     private DefaultTableModel modelAutores = new DefaultTableModel();
     private DefaultTableModel modelLibros = new DefaultTableModel();
+    
     
     public vistaAutores() {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("CRUD Autores - Sebastián Candelas Quero");
-        ctrlAutores = new ctrlJpaAutor(emf);
         inicModelosTablas();
+        inicModelComboBox();
         rellenarTablaAutores(ctrlAutores.obtenerAllAutores());
     }
 
@@ -77,6 +81,11 @@ public class vistaAutores extends javax.swing.JFrame {
         jLabelAutoresCat.setText("Autores con libros en la categoría: ");
 
         jComboBoxCateg.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBoxCateg.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBoxCategItemStateChanged(evt);
+            }
+        });
 
         jTableLibros.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -89,10 +98,17 @@ public class vistaAutores extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTableLibros.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTableLibrosMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(jTableLibros);
 
         jLabelCatg.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabelCatg.setText("Categorías del libro seleccionado: ");
+
+        jTextFieldCategLibro.setEditable(false);
 
         jMenuVolver.setText("Volver");
         jMenuVolver.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -177,6 +193,27 @@ public class vistaAutores extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jTableAutoresMouseClicked
 
+    private void jComboBoxCategItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxCategItemStateChanged
+        String cat = "" + jComboBoxCateg.getSelectedItem();
+        if(cat.equals("--Ninguna--")){
+            rellenarTablaAutores(ctrlAutores.obtenerAllAutores());
+        }else{
+            rellenarTablaAutores(ctrlAutores.obtenerAutoresCateg(cat));
+        }
+    }//GEN-LAST:event_jComboBoxCategItemStateChanged
+
+    private void jTableLibrosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableLibrosMouseClicked
+        if(jTableLibros.getSelectedRow() != -1){
+            Set<Categoria> colecCategorias;
+            int row = jTableLibros.getSelectedRow();
+            Object nombreLi = modelLibros.getValueAt(row, 0);
+            colecCategorias = ctrlLibro.obtenerCategoriasLibro(nombreLi);
+            for(Categoria c : colecCategorias){
+                jTextFieldCategLibro.setText(c.getNomCategoria() + "\n");
+            }
+        }
+    }//GEN-LAST:event_jTableLibrosMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -243,6 +280,7 @@ public class vistaAutores extends javax.swing.JFrame {
     }
 
     private void rellenarTablaAutores(List<Autor> listaAutores) {
+        modelAutores.setRowCount(0);
         for(Autor a : listaAutores){
             Object[] fila = {a.getIdAutor(), a.getNomAutor()};
             modelAutores.addRow(fila);
@@ -255,6 +293,14 @@ public class vistaAutores extends javax.swing.JFrame {
         for(Libro l : colecLibros){
             Object[] fila = {l.getTitulo(), sdf.format(l.getFechaPublicacion()), l.getPrecio()};
             modelLibros.addRow(fila);
+        }
+    }
+
+    private void inicModelComboBox() {
+        jComboBoxCateg.removeAllItems();
+        jComboBoxCateg.addItem("--Ninguna--");
+        for(Categoria c : ctrlCateg.obtenerCategorias()){
+            jComboBoxCateg.addItem(c.getNomCategoria());
         }
     }
 }

@@ -56,11 +56,29 @@ public class ctrlJpaAutor {
             em = getEntityManager();
             a = em.find(Autor.class, idAutor);
             //Guardamos los datos de la lista
-            for(Libro l : a.getLibrosSet()){}
             listaLibrosAutor = a.getLibrosSet();
+            listaLibrosAutor.isEmpty();
         }finally{
             em.close();
         }
         return listaLibrosAutor;
+    }
+    
+    //Metodo para obtener la lista de autoress con libros de 'x' categoría
+    public List<Autor> obtenerAutoresCateg(String cat){
+        //Creamos el EM y una lista para guardar el resultado de la consulta
+        EntityManager em = null;
+        List<Autor> listaAutores;
+        try{
+            //Inicializamos el em y generamos una query para la consulta
+            em = getEntityManager();
+            Query consulta = em.createNamedQuery("Autores.findByCateg");
+            consulta.setParameter("nomCategoria", cat);
+            //Guardamos los datos de la lista
+            listaAutores = consulta.getResultList();
+        }finally{
+            em.close();
+        }
+        return listaAutores;
     }
 }
