@@ -29,6 +29,37 @@ public class ctrlJpaAutor {
         return this.emf.createEntityManager();
     }
     
+    //Metodo para crear un autor
+    public void crear(Autor autor){
+        if(autor.getLibrosSet() == null){
+            autor.setLibrosSet(new HashSet<Libro>());
+        }
+        EntityManager em = null;
+        try{
+            em = getEntityManager();
+            em.getTransaction().begin();
+            em.persist(autor);
+            em.getTransaction().commit();
+        }finally{
+            em.close();
+        }
+    }
+    
+    //Metodo para dar de baja un autor
+    public void baja(Object idAutor){
+        Autor autor;
+        EntityManager em = null;
+        try{
+            em = getEntityManager();
+            autor = em.getReference(Autor.class, idAutor);
+            em.getTransaction().begin();
+            em.remove(autor);
+            em.getTransaction().commit();
+        }finally{
+            em.close();
+        }
+    }
+    
     //Metodo para obtener los autores, recive un String con el nombre de una namedQuery
     public List<Autor> obtenerAllAutores(){
         //Creamos el EM y una lista para guardar el resultado de la consulta

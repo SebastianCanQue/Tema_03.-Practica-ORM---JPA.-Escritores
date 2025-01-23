@@ -16,11 +16,17 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Alta"/>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jMenuAltaMouseClicked"/>
+          </Events>
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenuBaja">
           <Properties>
             <Property name="text" type="java.lang.String" value="Baja"/>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jMenuBajaMouseClicked"/>
+          </Events>
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenuMod">
           <Properties>
@@ -31,6 +37,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Refrescar"/>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jMenuRefrescarMouseClicked"/>
+          </Events>
         </Menu>
       </SubComponents>
     </Menu>

@@ -7,8 +7,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelos.*;
+import vistas.CRUD.*;
 
 /**
  *
@@ -18,6 +20,8 @@ import modelos.*;
 public class vistaAutores extends javax.swing.JFrame {
     
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("uniPersistencia");;
+    //VistasCrud
+    private aniadirAutor aniadirAut;
     //Controladores de las clases
     private ctrlJpaAutor ctrlAutores = new ctrlJpaAutor(emf);
     private ctrlJpaCategoria ctrlCateg = new ctrlJpaCategoria(emf);
@@ -119,15 +123,30 @@ public class vistaAutores extends javax.swing.JFrame {
         jMenuBarAutores.add(jMenuVolver);
 
         jMenuAlta.setText("Alta");
+        jMenuAlta.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenuAltaMouseClicked(evt);
+            }
+        });
         jMenuBarAutores.add(jMenuAlta);
 
         jMenuBaja.setText("Baja");
+        jMenuBaja.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenuBajaMouseClicked(evt);
+            }
+        });
         jMenuBarAutores.add(jMenuBaja);
 
         jMenuMod.setText("Modificar");
         jMenuBarAutores.add(jMenuMod);
 
         jMenuRefrescar.setText("Refrescar");
+        jMenuRefrescar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenuRefrescarMouseClicked(evt);
+            }
+        });
         jMenuBarAutores.add(jMenuRefrescar);
 
         setJMenuBar(jMenuBarAutores);
@@ -213,6 +232,32 @@ public class vistaAutores extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jTableLibrosMouseClicked
+
+    private void jMenuAltaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuAltaMouseClicked
+        aniadirAut = new aniadirAutor(this, rootPaneCheckingEnabled);
+        aniadirAut.setVisible(true);
+    }//GEN-LAST:event_jMenuAltaMouseClicked
+
+    private void jMenuRefrescarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuRefrescarMouseClicked
+        rellenarTablaAutores(ctrlAutores.obtenerAllAutores());
+        jComboBoxCateg.setSelectedIndex(0);
+    }//GEN-LAST:event_jMenuRefrescarMouseClicked
+
+    private void jMenuBajaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuBajaMouseClicked
+        if(jTableAutores.getSelectedRow() == -1){
+            JOptionPane.showMessageDialog(null, "Seleccione un autor de la tabla para dar de baja");
+        }else{
+            int selec = JOptionPane.showConfirmDialog(null, "¿Seguro que desea borrar el autor seleccionado? "
+                    + "También se borraran los libros asociados a este autor", "Confirmación", JOptionPane.YES_NO_OPTION);
+            if(selec == JOptionPane.YES_OPTION){
+                Object autor = modelAutores.getValueAt(jTableAutores.getSelectedRow(), 0);
+                
+            }else{
+                JOptionPane.showMessageDialog(null, "Baja cancelada");
+            }
+        
+        }
+    }//GEN-LAST:event_jMenuBajaMouseClicked
 
     /**
      * @param args the command line arguments

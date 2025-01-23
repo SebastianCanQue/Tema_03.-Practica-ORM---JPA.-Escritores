@@ -40,6 +40,11 @@ public class Autor implements Serializable {
         this.nomAutor = nomAutor;
     }
 
+    public Autor(String nomAutor, Set<Libro> librosSet) {
+        this.nomAutor = nomAutor;
+        this.librosSet = librosSet;
+    }
+
     public Integer getIdAutor() {
         return idAutor;
     }
