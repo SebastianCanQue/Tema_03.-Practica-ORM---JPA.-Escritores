@@ -80,4 +80,22 @@ public class ctrlJpaLibro {
         }
         return libro;
     }
+    
+    //Metodo para obtener la lista de libros con 'x' autor
+    public List<Libro> obtenerLibrosAutor(String autor){
+        //Creamos el EM y una lista para guardar el resultado de la consulta
+        EntityManager em = null;
+        List<Libro> listaAutores;
+        try{
+            //Inicializamos el em y generamos una query para la consulta
+            em = getEntityManager();
+            Query consulta = em.createNamedQuery("Autores.findByCateg");
+            consulta.setParameter("nomCategoria", autor);
+            //Guardamos los datos de la lista
+            listaAutores = consulta.getResultList();
+        }finally{
+            em.close();
+        }
+        return listaAutores;
+    }
 }

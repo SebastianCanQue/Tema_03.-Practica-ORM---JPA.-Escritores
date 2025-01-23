@@ -65,12 +65,70 @@ public class ctrlJpaAutor {
         EntityManager em = null;
         try{
             em = getEntityManager();
-            autor.getIdAutor();
             em.getTransaction().begin();
+            autor = em.getReference(Autor.class, autor.getIdAutor());
             em.remove(autor);
             em.getTransaction().commit();
         }finally{
             em.close();
+        }
+    }
+    
+    //Metodo para editar un autor
+    public void editar(Autor autor) throws IllegalOrphanException, NonexistentEntityException, Exception{
+        EntityManager em = null;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            Autor antiguoModAutor = em.find(Autor.class, autor.getIdAutor());
+            Set<Libro> librosSetAntiguo = antiguoModAutor.getLibrosSet();
+            Set<Libro> librosSetNuevo = autor.getLibrosSet();
+            List<String> illegalOrphanMessages = null;
+            for (Libro libroAntiguo : librosSetAntiguo) {
+                if (!librosSetNuevo.contains(libroAntiguo)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("El libro " + libroAntiguo 
+                            + " debe permanecer en la lista del autor ya que no se puede quedar sin autor");
+                }
+            }
+            if (illegalOrphanMessages != null) {
+                throw new IllegalOrphanException(illegalOrphanMessages);
+            }
+            Set<Libro> NuevoLibrosSet = new HashSet<Libro>();
+            for (Libro libroNuevo : librosSetNuevo) {
+                libroNuevo = em.getReference(libroNuevo.getClass(), libroNuevo.getIdLibros());
+                NuevoLibrosSet.add(libroNuevo);
+            }
+            librosSetNuevo = NuevoLibrosSet;
+            autor.setLibrosSet(librosSetNuevo);
+            autor = em.merge(autor);
+            for (Libro librosNuevo : librosSetNuevo) {
+                if (!librosSetAntiguo.contains(librosNuevo)) {
+                    Autor antiguoAutor = librosNuevo.getAutor();
+                    librosNuevo.setAutor(autor);
+                    librosNuevo = em.merge(librosNuevo);
+                    if (antiguoAutor != null && !antiguoAutor.equals(autor)) {
+                        antiguoAutor.getLibrosSet().remove(librosNuevo);
+                        antiguoAutor = em.merge(antiguoAutor);
+                    }
+                }
+            }
+            em.getTransaction().commit();
+        } catch (Exception ex) {
+            String msg = ex.getLocalizedMessage();
+            if (msg == null || msg.length() == 0) {
+                Integer id = autor.getIdAutor();
+                if (obtenerAutorXId(id) == null) {
+                    throw new NonexistentEntityException("El autor " + id + " no existe.");
+                }
+            }
+            throw ex;
+        } finally {
+            if (em != null) {
+                em.close();
+            }
         }
     }
     
@@ -135,6 +193,7 @@ public class ctrlJpaAutor {
         try{
             em = getEntityManager();
             autor = em.find(Autor.class, id);
+            autor.getLibrosSet().isEmpty();
         }finally{
             em.close();
         }

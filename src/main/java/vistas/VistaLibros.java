@@ -17,7 +17,7 @@ import modelos.*;
  * @author Sebastián Candelas Quero
  */
 
-public class VistaAutores extends javax.swing.JFrame {
+public class VistaLibros extends javax.swing.JFrame {
     
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("uniPersistencia");;
     //VistasCrud
@@ -27,17 +27,16 @@ public class VistaAutores extends javax.swing.JFrame {
     private ctrlJpaCategoria ctrlCateg = new ctrlJpaCategoria(emf);
     private ctrlJpaLibro ctrlLibro = new ctrlJpaLibro(emf);
     //Modelos de las tablas
-    private DefaultTableModel modelAutores = new DefaultTableModel();
     private DefaultTableModel modelLibros = new DefaultTableModel();
     
     
-    public VistaAutores() {
+    public VistaLibros() {
         initComponents();
         this.setLocationRelativeTo(null);
-        this.setTitle("CRUD Autores - Sebastián Candelas Quero");
+        this.setTitle("CRUD Libros - Sebastián Candelas Quero");
         inicModelosTablas();
         inicModelComboBox();
-        rellenarTablaAutores(ctrlAutores.obtenerAllAutores());
+        rellenarTablaLibros(ctrlLibro.obtenerAllLibros());
     }
 
     /**
@@ -50,11 +49,9 @@ public class VistaAutores extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTableAutores = new javax.swing.JTable();
-        jLabelAutoresCat = new javax.swing.JLabel();
-        jComboBoxCateg = new javax.swing.JComboBox<>();
-        jScrollPane2 = new javax.swing.JScrollPane();
         jTableLibros = new javax.swing.JTable();
+        jLabelAutoresCat = new javax.swing.JLabel();
+        jComboBoxAutores = new javax.swing.JComboBox<>();
         jLabelCatg = new javax.swing.JLabel();
         jTextFieldCategLibro = new javax.swing.JTextField();
         jMenuBarAutores = new javax.swing.JMenuBar();
@@ -62,12 +59,11 @@ public class VistaAutores extends javax.swing.JFrame {
         jMenuAlta = new javax.swing.JMenu();
         jMenuBaja = new javax.swing.JMenu();
         jMenuMod = new javax.swing.JMenu();
-        jMenuConsultar = new javax.swing.JMenu();
         jMenuRefrescar = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTableAutores.setModel(new javax.swing.table.DefaultTableModel(
+        jTableLibros.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -75,40 +71,22 @@ public class VistaAutores extends javax.swing.JFrame {
                 "Id", "Nombre"
             }
         ));
-        jTableAutores.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTableAutoresMouseClicked(evt);
-            }
-        });
-        jScrollPane1.setViewportView(jTableAutores);
-
-        jLabelAutoresCat.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabelAutoresCat.setText("Autores con libros en la categoría: ");
-
-        jComboBoxCateg.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jComboBoxCateg.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                jComboBoxCategItemStateChanged(evt);
-            }
-        });
-
-        jTableLibros.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
         jTableLibros.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTableLibrosMouseClicked(evt);
             }
         });
-        jScrollPane2.setViewportView(jTableLibros);
+        jScrollPane1.setViewportView(jTableLibros);
+
+        jLabelAutoresCat.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabelAutoresCat.setText("Libros del autor:");
+
+        jComboBoxAutores.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBoxAutores.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBoxAutoresItemStateChanged(evt);
+            }
+        });
 
         jLabelCatg.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabelCatg.setText("Categorías del libro seleccionado: ");
@@ -147,14 +125,6 @@ public class VistaAutores extends javax.swing.JFrame {
         });
         jMenuBarAutores.add(jMenuMod);
 
-        jMenuConsultar.setText("Consultar");
-        jMenuConsultar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jMenuConsultarMouseClicked(evt);
-            }
-        });
-        jMenuBarAutores.add(jMenuConsultar);
-
         jMenuRefrescar.setText("Refrescar");
         jMenuRefrescar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -170,70 +140,48 @@ public class VistaAutores extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 357, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(286, 286, 286)
                         .addComponent(jLabelAutoresCat)
-                        .addGap(60, 60, 60)
-                        .addComponent(jComboBoxCateg, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 526, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(52, 52, 52)
+                        .addComponent(jComboBoxAutores, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(214, 214, 214)
                         .addComponent(jLabelCatg)
-                        .addGap(45, 45, 45)
-                        .addComponent(jTextFieldCategLibro, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(30, 30, 30))
+                        .addGap(67, 67, 67)
+                        .addComponent(jTextFieldCategLibro, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 913, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(75, 75, 75)
+                .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelAutoresCat)
-                    .addComponent(jComboBoxCateg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(70, 70, 70)
+                    .addComponent(jComboBoxAutores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(44, 44, 44)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(51, 51, 51)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabelCatg)
-                    .addComponent(jTextFieldCategLibro, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(143, Short.MAX_VALUE))
+                    .addComponent(jTextFieldCategLibro, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelCatg))
+                .addContainerGap(58, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuVolverMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuVolverMouseClicked
-        //Cerramos la venta autores
+        //Cerramos la venta libros
         dispose();
         //Creamos la nueva ventana principal y la mostramos
         Principal principal = new Principal();
         principal.setVisible(true);
     }//GEN-LAST:event_jMenuVolverMouseClicked
-
-    private void jTableAutoresMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableAutoresMouseClicked
-        if(jTableAutores.getSelectedRow() != -1){
-            Set<Libro> colecLibros;
-            int row = jTableAutores.getSelectedRow();
-            Object idAutor = modelAutores.getValueAt(row, 0);
-            colecLibros = ctrlAutores.obtenerLibrosAutor(idAutor);
-            rellenarTablaLibros(colecLibros);
-        }
-    }//GEN-LAST:event_jTableAutoresMouseClicked
-
-    private void jComboBoxCategItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxCategItemStateChanged
-        String cat = "" + jComboBoxCateg.getSelectedItem();
-        if(cat.equals("--Ninguna--")){
-            rellenarTablaAutores(ctrlAutores.obtenerAllAutores());
-        }else{
-            rellenarTablaAutores(ctrlAutores.obtenerAutoresCateg(cat));
-        }
-    }//GEN-LAST:event_jComboBoxCategItemStateChanged
 
     private void jTableLibrosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableLibrosMouseClicked
         if(jTableLibros.getSelectedRow() != -1){
@@ -247,6 +195,15 @@ public class VistaAutores extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jTableLibrosMouseClicked
 
+    private void jComboBoxAutoresItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxAutoresItemStateChanged
+        String autor = "" + jComboBoxAutores.getSelectedItem();
+        if(autor.equals("--Ninguna--")){
+            rellenarTablaLibros(ctrlLibro.obtenerAllLibros());
+        }else{
+            rellenarTablaLibros(ctrlLibro.obtenerLibrosAutor(autor));
+        }
+    }//GEN-LAST:event_jComboBoxAutoresItemStateChanged
+
     private void jMenuAltaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuAltaMouseClicked
         aniadirAut = new DialogAniadirAutor(this, rootPaneCheckingEnabled);
         aniadirAut.setVisible(true);
@@ -255,16 +212,16 @@ public class VistaAutores extends javax.swing.JFrame {
 
     private void jMenuRefrescarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuRefrescarMouseClicked
         rellenarTablaAutores(ctrlAutores.obtenerAllAutores());
-        jComboBoxCateg.setSelectedIndex(0);
+        jComboBoxAutores.setSelectedIndex(0);
     }//GEN-LAST:event_jMenuRefrescarMouseClicked
 
     private void jMenuBajaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuBajaMouseClicked
-        if(jTableAutores.getSelectedRow() == -1){
+        if(jTableLibros.getSelectedRow() == -1){
             JOptionPane.showMessageDialog(null, "Seleccione un autor de la tabla para dar de baja");
         }else{
             int selec = JOptionPane.showConfirmDialog(null, "¿Seguro que desea borrar el autor seleccionado?", "Confirmación", JOptionPane.YES_NO_OPTION);
             if(selec == JOptionPane.YES_OPTION){
-                Object idAutor = modelAutores.getValueAt(jTableAutores.getSelectedRow(), 0);
+                Object idAutor = modelAutores.getValueAt(jTableLibros.getSelectedRow(), 0);
                 Autor autor = ctrlAutores.obtenerAutorXId(idAutor);
                 if(autor.getLibrosSet().size() > 0){
                     JOptionPane.showMessageDialog(null, "No se pueden borrar autores que tengan libros");
@@ -281,10 +238,6 @@ public class VistaAutores extends javax.swing.JFrame {
     private void jMenuModMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuModMouseClicked
         
     }//GEN-LAST:event_jMenuModMouseClicked
-
-    private void jMenuConsultarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuConsultarMouseClicked
-        
-    }//GEN-LAST:event_jMenuConsultarMouseClicked
 
     /**
      * @param args the command line arguments
@@ -303,78 +256,65 @@ public class VistaAutores extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(VistaAutores.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VistaLibros.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(VistaAutores.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VistaLibros.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(VistaAutores.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VistaLibros.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(VistaAutores.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VistaLibros.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new VistaAutores().setVisible(true);
+                new VistaLibros().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<String> jComboBoxCateg;
+    private javax.swing.JComboBox<String> jComboBoxAutores;
     private javax.swing.JLabel jLabelAutoresCat;
     private javax.swing.JLabel jLabelCatg;
     private javax.swing.JMenu jMenuAlta;
     private javax.swing.JMenu jMenuBaja;
     private javax.swing.JMenuBar jMenuBarAutores;
-    private javax.swing.JMenu jMenuConsultar;
     private javax.swing.JMenu jMenuMod;
     private javax.swing.JMenu jMenuRefrescar;
     private javax.swing.JMenu jMenuVolver;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTableAutores;
     private javax.swing.JTable jTableLibros;
     private javax.swing.JTextField jTextFieldCategLibro;
     // End of variables declaration//GEN-END:variables
 
     private void inicModelosTablas() {
-        //Tabla autores
-        modelAutores.addColumn("Id");
-        modelAutores.addColumn("Nombre");
-        jTableAutores.setModel(modelAutores);
         //Tabla libros
+        modelLibros.addColumn("Id");
         modelLibros.addColumn("Titulo");
         modelLibros.addColumn("Fecha Publicación");
         modelLibros.addColumn("Precio");
-        jTableLibros.setModel(modelLibros);
-        
+        jTableLibros.setModel(modelLibros);        
     }
 
-    private void rellenarTablaAutores(List<Autor> listaAutores) {
-        modelAutores.setRowCount(0);
-        for(Autor a : listaAutores){
-            Object[] fila = {a.getIdAutor(), a.getNomAutor()};
-            modelAutores.addRow(fila);
-        }
-    }
-
-    private void rellenarTablaLibros(Set<Libro> colecLibros) {
+    private void rellenarTablaLibros(List<Libro> colecLibros) {
         modelLibros.setRowCount(0);
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         for(Libro l : colecLibros){
-            Object[] fila = {l.getTitulo(), sdf.format(l.getFechaPublicacion()), l.getPrecio()};
+            Object[] fila = {l.getIdLibros(), l.getTitulo(), sdf.format(l.getFechaPublicacion()), l.getPrecio()};
             modelLibros.addRow(fila);
         }
     }
 
     private void inicModelComboBox() {
-        jComboBoxCateg.removeAllItems();
-        jComboBoxCateg.addItem("--Ninguna--");
-        for(Categoria c : ctrlCateg.obtenerCategorias()){
-            jComboBoxCateg.addItem(c.getNomCategoria());
+        jComboBoxAutores.removeAllItems();
+        jComboBoxAutores.addItem("--Todos--");
+        for(Autor a : ctrlAutores.obtenerAllAutores()){
+            jComboBoxAutores.addItem(a.getNomAutor());
         }
     }
     

@@ -1,8 +1,11 @@
-package vistas.CRUD;
+package vistas;
 
 import controladores.*;
+import controladores.exceptions.NonexistentEntityException;
 import jakarta.persistence.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelos.*;
@@ -11,7 +14,7 @@ import modelos.*;
  *
  * @author Sebastián Candelas Quero
  */
-public class aniadirAutor extends javax.swing.JDialog {
+public class DialogModAutor extends javax.swing.JDialog {
 
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("uniPersistencia");
     //Controladores
@@ -20,8 +23,9 @@ public class aniadirAutor extends javax.swing.JDialog {
     //Modelos
     private DefaultTableModel modelLibros = new DefaultTableModel();
     private DefaultTableModel modelLibrosSelec = new DefaultTableModel();
-    
-    public aniadirAutor(java.awt.Frame parent, boolean modal) {
+    private Autor autor;
+
+    public DialogModAutor(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         this.setLocationRelativeTo(null);
@@ -39,10 +43,10 @@ public class aniadirAutor extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabelAniadir = new javax.swing.JLabel();
+        jLabelTitle = new javax.swing.JLabel();
         jTextFieldNombre = new javax.swing.JTextField();
         jLabelNom = new javax.swing.JLabel();
-        jButtonAniadir = new javax.swing.JButton();
+        jButtonModificar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableLibros = new javax.swing.JTable();
         jButtonEliminar = new javax.swing.JButton();
@@ -54,7 +58,7 @@ public class aniadirAutor extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jLabelAniadir.setText("Añadir un nuevo Autor");
+        jLabelTitle.setText("Modificar Autor");
 
         jTextFieldNombre.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -64,10 +68,10 @@ public class aniadirAutor extends javax.swing.JDialog {
 
         jLabelNom.setText("Nombre");
 
-        jButtonAniadir.setText("Añadir");
-        jButtonAniadir.addActionListener(new java.awt.event.ActionListener() {
+        jButtonModificar.setText("Modificar");
+        jButtonModificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonAniadirActionPerformed(evt);
+                jButtonModificarActionPerformed(evt);
             }
         });
 
@@ -119,10 +123,6 @@ public class aniadirAutor extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jLabelAniadir)
-                .addGap(180, 180, 180))
             .addGroup(layout.createSequentialGroup()
                 .addGap(108, 108, 108)
                 .addComponent(jLabelNom)
@@ -131,41 +131,46 @@ public class aniadirAutor extends javax.swing.JDialog {
                 .addGap(96, 96, 96))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButtonAniadir)
+                .addComponent(jButtonModificar)
                 .addGap(205, 205, 205))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButtonSelec, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
-                    .addComponent(jButtonEliminar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(21, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGap(91, 91, 91)
                 .addComponent(jLabelLibros, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabelLibrosAut)
                 .addGap(68, 68, 68))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButtonSelec, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                            .addComponent(jButtonEliminar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(200, 200, 200)
+                        .addComponent(jLabelTitle)))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addComponent(jLabelAniadir)
+                .addGap(19, 19, 19)
+                .addComponent(jLabelTitle)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(197, 197, 197)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(195, 195, 195)
                         .addComponent(jButtonSelec)
                         .addGap(39, 39, 39)
                         .addComponent(jButtonEliminar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButtonAniadir)
+                        .addComponent(jButtonModificar)
                         .addGap(31, 31, 31))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(65, 65, 65)
+                        .addGap(63, 63, 63)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabelNom)
                             .addComponent(jTextFieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -187,29 +192,34 @@ public class aniadirAutor extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldNombreActionPerformed
 
-    private void jButtonAniadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAniadirActionPerformed
-        if(jTextFieldNombre.getText().equals("")){
+    private void jButtonModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModificarActionPerformed
+        if (jTextFieldNombre.getText().equals("")) {
             JOptionPane.showMessageDialog(null, "Introduzca un nombre");
-        }else{
-            if(modelLibrosSelec.getRowCount() == 0){
-                JOptionPane.showMessageDialog(null, "Seleccione al menos un libro");
-            }else{
-                Set<Libro> listaLibros = new HashSet<Libro>();
-                Libro libro;
-                for(int i = 0; i < modelLibrosSelec.getRowCount(); i++){
-                    libro = ctrlLibro.obtenerLibroXId(modelLibrosSelec.getValueAt(i, 0));
-                    listaLibros.add(libro);
-                }
-                ctrlAutor.crear(jTextFieldNombre.getText(), listaLibros);
+        } else {
+            Set<Libro> listaLibros = new HashSet<Libro>();
+            Libro libro;
+            for (int i = 0; i < modelLibrosSelec.getRowCount(); i++) {
+                libro = ctrlLibro.obtenerLibroXId(modelLibrosSelec.getValueAt(i, 0));
+                listaLibros.add(libro);
+            }
+            Autor autorMod = new Autor(jTextFieldNombre.getText(), listaLibros);
+            try {
+                ctrlAutor.editar(autorMod);
                 this.dispose();
+            } catch (NonexistentEntityException ex) {
+                JOptionPane.showMessageDialog(null, ex);
+                Logger.getLogger(DialogModAutor.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, ex);
+                Logger.getLogger(DialogModAutor.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-    }//GEN-LAST:event_jButtonAniadirActionPerformed
+    }//GEN-LAST:event_jButtonModificarActionPerformed
 
     private void jButtonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarActionPerformed
-        if(jTableLibrosSelec.getSelectedRow() == -1){
+        if (jTableLibrosSelec.getSelectedRow() == -1) {
             JOptionPane.showMessageDialog(null, "Seleccione un libro de la tabla Libros del Autor");
-        }else{
+        } else {
             int row = jTableLibrosSelec.getSelectedRow();
             Object[] fila = {modelLibrosSelec.getValueAt(row, 0), modelLibrosSelec.getValueAt(row, 1)};
             modelLibrosSelec.removeRow(row);
@@ -218,9 +228,9 @@ public class aniadirAutor extends javax.swing.JDialog {
     }//GEN-LAST:event_jButtonEliminarActionPerformed
 
     private void jButtonSelecActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSelecActionPerformed
-        if(jTableLibros.getSelectedRow() == -1){
+        if (jTableLibros.getSelectedRow() == -1) {
             JOptionPane.showMessageDialog(null, "Seleccione un libro de la tabla Libros");
-        }else{
+        } else {
             int row = jTableLibros.getSelectedRow();
             Object[] fila = {modelLibros.getValueAt(row, 0), modelLibros.getValueAt(row, 1)};
             modelLibros.removeRow(row);
@@ -245,20 +255,23 @@ public class aniadirAutor extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(aniadirAutor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DialogModAutor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(aniadirAutor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DialogModAutor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(aniadirAutor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DialogModAutor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(aniadirAutor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DialogModAutor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                aniadirAutor dialog = new aniadirAutor(new javax.swing.JFrame(), true);
+                DialogModAutor dialog = new DialogModAutor(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -271,13 +284,13 @@ public class aniadirAutor extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonAniadir;
     private javax.swing.JButton jButtonEliminar;
+    private javax.swing.JButton jButtonModificar;
     private javax.swing.JButton jButtonSelec;
-    private javax.swing.JLabel jLabelAniadir;
     private javax.swing.JLabel jLabelLibros;
     private javax.swing.JLabel jLabelLibrosAut;
     private javax.swing.JLabel jLabelNom;
+    private javax.swing.JLabel jLabelTitle;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTableLibros;
@@ -286,7 +299,12 @@ public class aniadirAutor extends javax.swing.JDialog {
     // End of variables declaration//GEN-END:variables
 
     private void initTablas(List<Libro> listaLibros) {
-        for(Libro l : listaLibros){
+        for (Libro l : autor.getLibrosSet()) {
+            listaLibros.remove(l);
+            Object[] fila = {l.getIdLibros(), l.getTitulo()};
+            modelLibrosSelec.addRow(fila);
+        }
+        for (Libro l : listaLibros) {
             Object[] fila = {l.getIdLibros(), l.getTitulo()};
             modelLibros.addRow(fila);
         }
@@ -302,4 +320,5 @@ public class aniadirAutor extends javax.swing.JDialog {
         modelLibrosSelec.addColumn("Nombre");
         jTableLibrosSelec.setModel(modelLibrosSelec);
     }
+
 }
