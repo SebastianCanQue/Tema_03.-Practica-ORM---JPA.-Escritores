@@ -13,11 +13,11 @@ import java.util.*;
 @Entity
 @Table(name="Libros")
 @NamedQueries({
-    @NamedQuery(name = "Libros.findAll", query = "SELECT l FROM Libros l"),
-    @NamedQuery(name = "Libros.findByIdLibros", query = "SELECT l FROM Libros l WHERE l.idLibros = :idLibros"),
-    @NamedQuery(name = "Libros.findByTitulo", query = "SELECT l FROM Libros l WHERE l.titulo = :titulo"),
-    @NamedQuery(name = "Libros.findByFechaPublicacion", query = "SELECT l FROM Libros l WHERE l.fechaPublicacion = :fechaPublicacion"),
-    @NamedQuery(name = "Libros.findByPrecio", query = "SELECT l FROM Libros l WHERE l.precio = :precio")})
+    @NamedQuery(name = "Libros.findAll", query = "SELECT l FROM Libro l"),
+    @NamedQuery(name = "Libros.findByIdLibros", query = "SELECT l FROM Libro l WHERE l.idLibros = :idLibros"),
+    @NamedQuery(name = "Libros.findByTitulo", query = "SELECT l FROM Libro l WHERE l.titulo = :titulo"),
+    @NamedQuery(name = "Libros.findByFechaPublicacion", query = "SELECT l FROM Libro l WHERE l.fechaPublicacion = :fechaPublicacion"),
+    @NamedQuery(name = "Libros.findByPrecio", query = "SELECT l FROM Libro l WHERE l.precio = :precio")})
 public class Libro implements Serializable{
     private static final long serialVersionUID = 1L;
     @Id
@@ -121,6 +121,6 @@ public class Libro implements Serializable{
 
     @Override
     public String toString() {
-        return "com.karnedo.mavenproject1.Libros[ idLibros=" + idLibros + " ]";
+        return "modelos.Libros[ idLibros=" + idLibros + " ]";
     }
 }

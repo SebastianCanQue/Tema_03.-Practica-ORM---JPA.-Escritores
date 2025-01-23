@@ -12,9 +12,9 @@ import java.util.Set;
 @Entity
 @Table(name="Categorias")
 @NamedQueries({
-    @NamedQuery(name = "Categorias.findAll", query = "SELECT c FROM Categorias c"),
-    @NamedQuery(name = "Categorias.findByIdCategoria", query = "SELECT c FROM Categorias c WHERE c.idCategoria = :idCategoria"),
-    @NamedQuery(name = "Categorias.findByNomCategoria", query = "SELECT c FROM Categorias c WHERE c.nomCategoria = :nomCategoria")})
+    @NamedQuery(name = "Categorias.findAll", query = "SELECT c FROM Categoria c"),
+    @NamedQuery(name = "Categorias.findByIdCategoria", query = "SELECT c FROM Categoria c WHERE c.idCategoria = :idCategoria"),
+    @NamedQuery(name = "Categorias.findByNomCategoria", query = "SELECT c FROM Categoria c WHERE c.nomCategoria = :nomCategoria")})
 public class Categoria implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -85,7 +85,7 @@ public class Categoria implements Serializable {
 
     @Override
     public String toString() {
-        return "com.karnedo.mavenproject1.Categorias[ idCategoria=" + idCategoria + " ]";
+        return "modelos.Categorias[ idCategoria=" + idCategoria + " ]";
     }
     
 }

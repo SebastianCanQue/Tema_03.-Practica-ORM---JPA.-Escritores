@@ -1,6 +1,14 @@
 package vistas;
 
+import controladores.ctrlJpaAutor;
+import jakarta.persistence.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
+import modelos.*;
 
 /**
  *
@@ -8,16 +16,20 @@ import javax.swing.table.DefaultTableModel;
  */
 
 public class vistaAutores extends javax.swing.JFrame {
-
+    
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("uniPersistencia");;
+    private ctrlJpaAutor ctrlAutores;
     //Modelos de las tablas
-    DefaultTableModel modelAutores = new DefaultTableModel();
-    DefaultTableModel modelLibros = new DefaultTableModel();
+    private DefaultTableModel modelAutores = new DefaultTableModel();
+    private DefaultTableModel modelLibros = new DefaultTableModel();
     
     public vistaAutores() {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("CRUD Autores - Sebastián Candelas Quero");
-        initModelosTablas();
+        ctrlAutores = new ctrlJpaAutor(emf);
+        inicModelosTablas();
+        rellenarTablaAutores(ctrlAutores.obtenerAllAutores());
     }
 
     /**
@@ -54,6 +66,11 @@ public class vistaAutores extends javax.swing.JFrame {
                 "Id", "Nombre"
             }
         ));
+        jTableAutores.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTableAutoresMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTableAutores);
 
         jLabelAutoresCat.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -150,6 +167,16 @@ public class vistaAutores extends javax.swing.JFrame {
         principal.setVisible(true);
     }//GEN-LAST:event_jMenuVolverMouseClicked
 
+    private void jTableAutoresMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableAutoresMouseClicked
+        if(jTableAutores.getSelectedRow() != -1){
+            Set<Libro> colecLibros;
+            int row = jTableAutores.getSelectedRow();
+            Object idAutor = modelAutores.getValueAt(row, 0);
+            colecLibros = ctrlAutores.obtenerLibrosAutor(idAutor);
+            rellenarTablaLibros(colecLibros);
+        }
+    }//GEN-LAST:event_jTableAutoresMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -202,16 +229,34 @@ public class vistaAutores extends javax.swing.JFrame {
     private javax.swing.JTextField jTextFieldCategLibro;
     // End of variables declaration//GEN-END:variables
 
-    private void initModelosTablas() {
+    private void inicModelosTablas() {
         //Tabla autores
         modelAutores.addColumn("Id");
         modelAutores.addColumn("Nombre");
         jTableAutores.setModel(modelAutores);
         //Tabla libros
-        modelAutores.addColumn("Titulo");
-        modelAutores.addColumn("Fecha Publicación");
-        modelAutores.addColumn("Precio");
+        modelLibros.addColumn("Titulo");
+        modelLibros.addColumn("Fecha Publicación");
+        modelLibros.addColumn("Precio");
         jTableLibros.setModel(modelLibros);
         
+    }
+
+    private void rellenarTablaAutores(List<Autor> listaAutores) {
+        for(Autor a : listaAutores){
+            Object[] fila = {a.getIdAutor(), a.getNomAutor()};
+            modelAutores.addRow(fila);
+        }
+    }
+
+    private void rellenarTablaLibros(Set<Libro> colecLibros) {
+        modelLibros.setRowCount(0);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        for(Iterator it = colecLibros.iterator(); it.hasNext();){
+            Libro l = (Libro) it.next();
+            //System.out.println(l.getAutor());
+            Object[] fila = {l.getTitulo(), sdf.format(l.getFechaPublicacion()), l.getPrecio()};
+            modelLibros.addRow(fila);
+        }
     }
 }

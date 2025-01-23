@@ -12,9 +12,9 @@ import java.util.Set;
 @Entity
 @Table(name="Autores")
 @NamedQueries({
-    @NamedQuery(name = "Autores.findAll", query = "SELECT a FROM Autores a"),
-    @NamedQuery(name = "Autores.findByIdAutor", query = "SELECT a FROM Autores a WHERE a.idAutor = :idAutor"),
-    @NamedQuery(name = "Autores.findByNomAutor", query = "SELECT a FROM Autores a WHERE a.nomAutor = :nomAutor")})
+    @NamedQuery(name = "Autores.findAll", query = "SELECT a FROM Autor a"),
+    @NamedQuery(name = "Autores.findByIdAutor", query = "SELECT a FROM Autor a WHERE a.idAutor = :idAutor"),
+    @NamedQuery(name = "Autores.findByNomAutor", query = "SELECT a FROM Autor a WHERE a.nomAutor = :nomAutor")})
 public class Autor implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -85,7 +85,7 @@ public class Autor implements Serializable {
 
     @Override
     public String toString() {
-        return "com.karnedo.mavenproject1.Autores[ idAutor=" + idAutor + " ]";
+        return "modelos.Autor[ idAutor=" + idAutor + " ]";
     }
     
 }
