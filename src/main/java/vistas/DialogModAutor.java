@@ -206,13 +206,18 @@ public class DialogModAutor extends javax.swing.JDialog {
             }
             autor.setNomAutor(jTextFieldNombre.getText());
             autor.setLibrosSet(listaLibros);
+            for (Libro l : autor.getLibrosSet()) {
+                System.out.println(l);
+            }
             try {
                 ctrlAutor.editar(autor);
                 this.dispose();
             } catch (NonexistentEntityException ex) {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
+                initTablas(ctrlLibro.obtenerAllLibros());
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, ex.getMessage());
+                initTablas(ctrlLibro.obtenerAllLibros());
             }
         }
     }//GEN-LAST:event_jButtonModificarActionPerformed
@@ -222,9 +227,14 @@ public class DialogModAutor extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(null, "Seleccione un libro de la tabla Libros del Autor");
         } else {
             int row = jTableLibrosSelec.getSelectedRow();
-            Object[] fila = {modelLibrosSelec.getValueAt(row, 0), modelLibrosSelec.getValueAt(row, 1)};
-            modelLibrosSelec.removeRow(row);
-            modelLibros.addRow(fila);
+            Libro libro = ctrlLibro.obtenerLibroXId(modelLibrosSelec.getValueAt(row, 0));
+            if(libro.getAutor().getIdAutor().equals(autor.getIdAutor())){
+                JOptionPane.showMessageDialog(null, "No se puede eliminar el libro ya que se quedaría sin autor");
+            }else{
+                Object[] fila = {modelLibrosSelec.getValueAt(row, 0), modelLibrosSelec.getValueAt(row, 1)};
+                modelLibrosSelec.removeRow(row);
+                modelLibros.addRow(fila);
+            }
         }
     }//GEN-LAST:event_jButtonEliminarActionPerformed
 

@@ -83,19 +83,19 @@ public class ctrlJpaAutor {
             Autor antiguoModAutor = em.find(Autor.class, autor.getIdAutor());
             Set<Libro> librosSetAntiguo = antiguoModAutor.getLibrosSet();
             Set<Libro> librosSetNuevo = autor.getLibrosSet();
-            List<String> illegalOrphanMessages = null;
-            for (Libro libroAntiguo : librosSetAntiguo) {
-                if (!librosSetNuevo.contains(libroAntiguo)) {
-                    if (illegalOrphanMessages == null) {
-                        illegalOrphanMessages = new ArrayList<String>();
-                    }
-                    illegalOrphanMessages.add("El libro " + libroAntiguo 
-                            + " debe permanecer en la lista del autor ya que no se puede quedar sin autor");
-                }
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
-            }
+//            List<String> illegalOrphanMessages = null;
+//            for (Libro libroAntiguo : librosSetAntiguo) {
+//                if (!librosSetNuevo.contains(libroAntiguo)) {
+//                    if (illegalOrphanMessages == null) {
+//                        illegalOrphanMessages = new ArrayList<String>();
+//                    }
+//                    illegalOrphanMessages.add("El libro " + libroAntiguo 
+//                            + " debe permanecer en la lista del autor ya que no se puede quedar sin autor");
+//                }
+//            }
+//            if (illegalOrphanMessages != null) {
+//                throw new IllegalOrphanException(illegalOrphanMessages);
+//            }
             Set<Libro> NuevoLibrosSet = new HashSet<Libro>();
             for (Libro libroNuevo : librosSetNuevo) {
                 libroNuevo = em.getReference(libroNuevo.getClass(), libroNuevo.getIdLibros());
@@ -103,15 +103,18 @@ public class ctrlJpaAutor {
             }
             librosSetNuevo = NuevoLibrosSet;
             autor.setLibrosSet(librosSetNuevo);
-            autor = em.merge(autor);
+            for (Libro libroNuevo : autor.getLibrosSet()) {
+                System.out.println(libroNuevo);
+            }
+            autor = (Autor)em.merge(autor);
             for (Libro librosNuevo : librosSetNuevo) {
                 if (!librosSetAntiguo.contains(librosNuevo)) {
                     Autor antiguoAutor = librosNuevo.getAutor();
                     librosNuevo.setAutor(autor);
-                    librosNuevo = em.merge(librosNuevo);
+                    librosNuevo = (Libro) em.merge(librosNuevo);
                     if (antiguoAutor != null && !antiguoAutor.equals(autor)) {
                         antiguoAutor.getLibrosSet().remove(librosNuevo);
-                        antiguoAutor = em.merge(antiguoAutor);
+                        antiguoAutor = (Autor)em.merge(antiguoAutor);
                     }
                 }
             }
