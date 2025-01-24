@@ -17,7 +17,8 @@ import java.util.*;
     @NamedQuery(name = "Libros.findByIdLibros", query = "SELECT l FROM Libro l WHERE l.idLibros = :idLibros"),
     @NamedQuery(name = "Libros.findByTitulo", query = "SELECT l FROM Libro l WHERE l.titulo = :titulo"),
     @NamedQuery(name = "Libros.findByFechaPublicacion", query = "SELECT l FROM Libro l WHERE l.fechaPublicacion = :fechaPublicacion"),
-    @NamedQuery(name = "Libros.findByPrecio", query = "SELECT l FROM Libro l WHERE l.precio = :precio")})
+    @NamedQuery(name = "Libros.findByPrecio", query = "SELECT l FROM Libro l WHERE l.precio = :precio"),
+    @NamedQuery(name = "Libros.findByAutor", query = "SELECT l FROM Libro l WHERE l.autor.nomAutor = :nomAutor")})
 public class Libro implements Serializable{
     private static final long serialVersionUID = 1L;
     @Id
@@ -50,6 +51,16 @@ public class Libro implements Serializable{
         this.idLibros = idLibros;
         this.precio = precio;
     }
+
+    public Libro(String titulo, Date fechaPublicacion, BigDecimal precio, Set<Categoria> categoriasSet, Autor autor) {
+        this.titulo = titulo;
+        this.fechaPublicacion = fechaPublicacion;
+        this.precio = precio;
+        this.categoriasSet = categoriasSet;
+        this.autor = autor;
+    }
+    
+    
 
     public Integer getIdLibros() {
         return idLibros;

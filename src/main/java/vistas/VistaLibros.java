@@ -16,20 +16,19 @@ import modelos.*;
  *
  * @author Sebastián Candelas Quero
  */
-
 public class VistaLibros extends javax.swing.JFrame {
-    
-    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("uniPersistencia");;
+
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("uniPersistencia");
+    ;
     //VistasCrud
     private DialogAniadirAutor aniadirAut;
     //Controladores de las clases
-    private ctrlJpaAutor ctrlAutores = new ctrlJpaAutor(emf);
+    private ctrlJpaAutor ctrlAutore = new ctrlJpaAutor(emf);
     private ctrlJpaCategoria ctrlCateg = new ctrlJpaCategoria(emf);
     private ctrlJpaLibro ctrlLibro = new ctrlJpaLibro(emf);
     //Modelos de las tablas
     private DefaultTableModel modelLibros = new DefaultTableModel();
-    
-    
+
     public VistaLibros() {
         initComponents();
         this.setLocationRelativeTo(null);
@@ -184,12 +183,12 @@ public class VistaLibros extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuVolverMouseClicked
 
     private void jTableLibrosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableLibrosMouseClicked
-        if(jTableLibros.getSelectedRow() != -1){
+        if (jTableLibros.getSelectedRow() != -1) {
             Set<Categoria> colecCategorias;
             int row = jTableLibros.getSelectedRow();
-            Object nombreLi = modelLibros.getValueAt(row, 0);
-            colecCategorias = ctrlLibro.obtenerCategoriasLibro(nombreLi);
-            for(Categoria c : colecCategorias){
+            Object idLibro = modelLibros.getValueAt(row, 0);
+            colecCategorias = ctrlLibro.obtenerLibroXId(idLibro).getCategoriasSet();
+            for (Categoria c : colecCategorias) {
                 jTextFieldCategLibro.setText(c.getNomCategoria() + "\n");
             }
         }
@@ -197,46 +196,43 @@ public class VistaLibros extends javax.swing.JFrame {
 
     private void jComboBoxAutoresItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxAutoresItemStateChanged
         String autor = "" + jComboBoxAutores.getSelectedItem();
-        if(autor.equals("--Ninguna--")){
+        if (autor.equals("--Todos--")) {
             rellenarTablaLibros(ctrlLibro.obtenerAllLibros());
-        }else{
+        } else {
             rellenarTablaLibros(ctrlLibro.obtenerLibrosAutor(autor));
         }
     }//GEN-LAST:event_jComboBoxAutoresItemStateChanged
 
     private void jMenuAltaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuAltaMouseClicked
-        aniadirAut = new DialogAniadirAutor(this, rootPaneCheckingEnabled);
-        aniadirAut.setVisible(true);
-        rellenarTablaAutores(ctrlAutores.obtenerAllAutores());
+//        aniadirAut = new DialogAniadirAutor(this, rootPaneCheckingEnabled);
+//        aniadirAut.setVisible(true);
+//        rellenarTablaAutores(ctrlAutores.obtenerAllAutores());
     }//GEN-LAST:event_jMenuAltaMouseClicked
 
     private void jMenuRefrescarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuRefrescarMouseClicked
-        rellenarTablaAutores(ctrlAutores.obtenerAllAutores());
+        rellenarTablaLibros(ctrlLibro.obtenerAllLibros());
         jComboBoxAutores.setSelectedIndex(0);
     }//GEN-LAST:event_jMenuRefrescarMouseClicked
 
     private void jMenuBajaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuBajaMouseClicked
-        if(jTableLibros.getSelectedRow() == -1){
-            JOptionPane.showMessageDialog(null, "Seleccione un autor de la tabla para dar de baja");
-        }else{
-            int selec = JOptionPane.showConfirmDialog(null, "¿Seguro que desea borrar el autor seleccionado?", "Confirmación", JOptionPane.YES_NO_OPTION);
-            if(selec == JOptionPane.YES_OPTION){
-                Object idAutor = modelAutores.getValueAt(jTableLibros.getSelectedRow(), 0);
-                Autor autor = ctrlAutores.obtenerAutorXId(idAutor);
-                if(autor.getLibrosSet().size() > 0){
-                    JOptionPane.showMessageDialog(null, "No se pueden borrar autores que tengan libros");
-                }else{
-                    ctrlAutores.baja(autor);
-                    rellenarTablaAutores(ctrlAutores.obtenerAllAutores());
-                }
-            }else{
+        if (jTableLibros.getSelectedRow() == -1) {
+            JOptionPane.showMessageDialog(null, "Seleccione un libro de la tabla para dar de baja");
+        } else {
+            int selec = JOptionPane.showConfirmDialog(null, "¿Seguro que desea borrar el libro seleccionado?", "Confirmación", JOptionPane.YES_NO_OPTION);
+            if (selec == JOptionPane.YES_OPTION) {
+                Object idLibro = modelLibros.getValueAt(jTableLibros.getSelectedRow(), 0);
+                Libro libro = ctrlLibro.obtenerLibroXId(idLibro);
+                ctrlLibro.baja(libro);
+                rellenarTablaLibros(ctrlLibro.obtenerAllLibros());
+
+            } else {
                 JOptionPane.showMessageDialog(null, "Baja cancelada");
             }
         }
     }//GEN-LAST:event_jMenuBajaMouseClicked
 
     private void jMenuModMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuModMouseClicked
-        
+
     }//GEN-LAST:event_jMenuModMouseClicked
 
     /**
@@ -298,13 +294,13 @@ public class VistaLibros extends javax.swing.JFrame {
         modelLibros.addColumn("Titulo");
         modelLibros.addColumn("Fecha Publicación");
         modelLibros.addColumn("Precio");
-        jTableLibros.setModel(modelLibros);        
+        jTableLibros.setModel(modelLibros);
     }
 
     private void rellenarTablaLibros(List<Libro> colecLibros) {
         modelLibros.setRowCount(0);
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        for(Libro l : colecLibros){
+        for (Libro l : colecLibros) {
             Object[] fila = {l.getIdLibros(), l.getTitulo(), sdf.format(l.getFechaPublicacion()), l.getPrecio()};
             modelLibros.addRow(fila);
         }
@@ -313,11 +309,11 @@ public class VistaLibros extends javax.swing.JFrame {
     private void inicModelComboBox() {
         jComboBoxAutores.removeAllItems();
         jComboBoxAutores.addItem("--Todos--");
-        for(Autor a : ctrlAutores.obtenerAllAutores()){
+        for (Autor a : ctrlAutore.obtenerAllAutores()) {
             jComboBoxAutores.addItem(a.getNomAutor());
         }
     }
-    
+
 //    public static Autor getModAutor(){
 //        Autor autor = null;
 //        EntityManager

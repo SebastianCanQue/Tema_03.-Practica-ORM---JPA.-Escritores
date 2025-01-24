@@ -199,4 +199,20 @@ public class ctrlJpaAutor {
         }
         return autor;
     }
+    
+    //Metodo para obtener autor por su nombre
+    public Autor obtenerAutorXNombre(Object nombre){
+        //Creamos el EM 
+        EntityManager em = null;
+        Autor autor = null;
+        try{
+            em = getEntityManager();
+            Query consulta = em.createNamedQuery("Autores.findByNomAutor");
+            consulta.setParameter("nomAutor", nombre);
+            autor.getLibrosSet().isEmpty();
+        }finally{
+            em.close();
+        }
+        return autor;
+    }
 }

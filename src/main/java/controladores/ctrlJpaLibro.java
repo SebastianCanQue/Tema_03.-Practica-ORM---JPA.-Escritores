@@ -28,6 +28,44 @@ public class ctrlJpaLibro {
         return this.emf.createEntityManager();
     }
     
+    //Metodo para crear un Libro
+    public void crear(Libro libro){
+        EntityManager em = null;
+        try{
+            em = getEntityManager();
+            em.getTransaction().begin();
+            Set<Categoria> categAniadir = new HashSet<Categoria>();
+            Autor autor = em.getReference(Autor.class, libro.getAutor().getIdAutor());
+            for(Categoria c : libro.getCategoriasSet()){
+                c = (Categoria)em.getReference(Categoria.class, c.getIdCategoria());
+                categAniadir.add(c);
+            }
+            libro.setCategoriasSet(categAniadir);
+            libro.setAutor(autor);
+            em.persist(libro);
+            autor.getLibrosSet().add(libro);
+            autor = (Autor) em.merge(autor);
+            em.getTransaction().commit();
+        }finally{
+            em.close();
+        }
+    }
+    
+    //Metodo para dar de baja un libro
+    public void baja(Libro libro){
+        EntityManager em = null;
+        try{
+            em = getEntityManager();
+            em.getTransaction().begin();
+            libro = em.getReference(Libro.class, libro.getIdLibros());
+            libro.getAutor().getLibrosSet().remove(libro);
+            em.remove(libro);
+            em.getTransaction().commit();
+        }finally{
+            em.close();
+        }
+    }
+    
     //Metodo para obtener las categoríoas de un libro
     public Set<Categoria> obtenerCategoriasLibro (Object nom){
         EntityManager em = null;
@@ -75,6 +113,7 @@ public class ctrlJpaLibro {
             em = getEntityManager();
             //Guardamos los datos en el objeto
             libro = em.find(Libro.class, id);
+            libro.getCategoriasSet().isEmpty();
         }finally{
             em.close();
         }
@@ -85,17 +124,17 @@ public class ctrlJpaLibro {
     public List<Libro> obtenerLibrosAutor(String autor){
         //Creamos el EM y una lista para guardar el resultado de la consulta
         EntityManager em = null;
-        List<Libro> listaAutores;
+        List<Libro> listaLibros;
         try{
             //Inicializamos el em y generamos una query para la consulta
             em = getEntityManager();
-            Query consulta = em.createNamedQuery("Autores.findByCateg");
-            consulta.setParameter("nomCategoria", autor);
+            Query consulta = em.createNamedQuery("Libros.findByAutor");
+            consulta.setParameter("nomAutor", autor);
             //Guardamos los datos de la lista
-            listaAutores = consulta.getResultList();
+            listaLibros = consulta.getResultList();
         }finally{
             em.close();
         }
-        return listaAutores;
+        return listaLibros;
     }
 }
