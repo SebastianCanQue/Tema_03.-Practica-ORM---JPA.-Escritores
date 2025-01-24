@@ -1,13 +1,9 @@
 package vistas;
 
 import controladores.*;
-import controladores.exceptions.NonexistentEntityException;
 import jakarta.persistence.*;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelos.*;
@@ -27,14 +23,25 @@ public class VistaAutores extends javax.swing.JFrame {
     private ctrlJpaCategoria ctrlCateg = new ctrlJpaCategoria(emf);
     private ctrlJpaLibro ctrlLibro = new ctrlJpaLibro(emf);
     //Modelos de las tablas
-    private DefaultTableModel modelAutores = new DefaultTableModel();
-    private DefaultTableModel modelLibros = new DefaultTableModel();
+    private DefaultTableModel modelAutores = new DefaultTableModel(){
+        @Override
+        public boolean isCellEditable(int row, int column){
+            return false;
+        }
+    };
+    private DefaultTableModel modelLibros = new DefaultTableModel(){
+        @Override
+        public boolean isCellEditable(int row, int column){
+            return false;
+        }
+    };;
     
     
     public VistaAutores() {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("CRUD Autores - Sebastián Candelas Quero");
+        this.toFront();
         inicModelosTablas();
         inicModelComboBox();
         rellenarTablaAutores(ctrlAutores.obtenerAllAutores());
@@ -56,13 +63,13 @@ public class VistaAutores extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTableLibros = new javax.swing.JTable();
         jLabelCatg = new javax.swing.JLabel();
-        jTextFieldCategLibro = new javax.swing.JTextField();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTextAreaCategLibro = new javax.swing.JTextArea();
         jMenuBarAutores = new javax.swing.JMenuBar();
         jMenuVolver = new javax.swing.JMenu();
         jMenuAlta = new javax.swing.JMenu();
         jMenuBaja = new javax.swing.JMenu();
         jMenuMod = new javax.swing.JMenu();
-        jMenuConsultar = new javax.swing.JMenu();
         jMenuRefrescar = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -113,7 +120,10 @@ public class VistaAutores extends javax.swing.JFrame {
         jLabelCatg.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabelCatg.setText("Categorías del libro seleccionado: ");
 
-        jTextFieldCategLibro.setEditable(false);
+        jTextAreaCategLibro.setEditable(false);
+        jTextAreaCategLibro.setColumns(20);
+        jTextAreaCategLibro.setRows(5);
+        jScrollPane3.setViewportView(jTextAreaCategLibro);
 
         jMenuVolver.setText("Volver");
         jMenuVolver.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -147,14 +157,6 @@ public class VistaAutores extends javax.swing.JFrame {
         });
         jMenuBarAutores.add(jMenuMod);
 
-        jMenuConsultar.setText("Consultar");
-        jMenuConsultar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jMenuConsultarMouseClicked(evt);
-            }
-        });
-        jMenuBarAutores.add(jMenuConsultar);
-
         jMenuRefrescar.setText("Refrescar");
         jMenuRefrescar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -181,8 +183,8 @@ public class VistaAutores extends javax.swing.JFrame {
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 526, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabelCatg)
-                        .addGap(45, 45, 45)
-                        .addComponent(jTextFieldCategLibro, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(49, 49, 49)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(30, 30, 30))
         );
         layout.setVerticalGroup(
@@ -198,11 +200,14 @@ public class VistaAutores extends javax.swing.JFrame {
                     .addComponent(jComboBoxCateg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(70, 70, 70)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabelCatg)
-                    .addComponent(jTextFieldCategLibro, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(143, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(107, 107, 107)
+                        .addComponent(jLabelCatg))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(67, 67, 67)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(156, Short.MAX_VALUE))
         );
 
         pack();
@@ -241,11 +246,11 @@ public class VistaAutores extends javax.swing.JFrame {
             int row = jTableLibros.getSelectedRow();
             Object nombreLi = modelLibros.getValueAt(row, 0);
             colecCategorias = ctrlLibro.obtenerCategoriasLibro(nombreLi);
-            String texto = "";
+            StringBuilder texto = new StringBuilder();
             for (Categoria c : colecCategorias) {
-                texto = c.getNomCategoria() + "\n";
+                texto.append(c.getNomCategoria()).append("\n");
             }
-            jTextFieldCategLibro.setText(texto);
+            jTextAreaCategLibro.setText(texto.toString());
         }
     }//GEN-LAST:event_jTableLibrosMouseClicked
 
@@ -292,10 +297,6 @@ public class VistaAutores extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuModMouseClicked
 
-    private void jMenuConsultarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuConsultarMouseClicked
-        
-    }//GEN-LAST:event_jMenuConsultarMouseClicked
-
     /**
      * @param args the command line arguments
      */
@@ -339,15 +340,15 @@ public class VistaAutores extends javax.swing.JFrame {
     private javax.swing.JMenu jMenuAlta;
     private javax.swing.JMenu jMenuBaja;
     private javax.swing.JMenuBar jMenuBarAutores;
-    private javax.swing.JMenu jMenuConsultar;
     private javax.swing.JMenu jMenuMod;
     private javax.swing.JMenu jMenuRefrescar;
     private javax.swing.JMenu jMenuVolver;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTableAutores;
     private javax.swing.JTable jTableLibros;
-    private javax.swing.JTextField jTextFieldCategLibro;
+    private javax.swing.JTextArea jTextAreaCategLibro;
     // End of variables declaration//GEN-END:variables
 
     private void inicModelosTablas() {
@@ -387,12 +388,4 @@ public class VistaAutores extends javax.swing.JFrame {
             jComboBoxCateg.addItem(c.getNomCategoria());
         }
     }
-    
-//    public static Autor getModAutor(){
-//        Autor autor = null;
-//        EntityManager
-//        ctrlJpaAutor ctrlStatic = new ctrlJpaAutor(emf);
-//        autor = ctrlAutores.obtenerAutorXId(modelAutores.getValueAt(jTableAutores.getSelectedRow(), 0));
-//        return autor;
-//    }
 }

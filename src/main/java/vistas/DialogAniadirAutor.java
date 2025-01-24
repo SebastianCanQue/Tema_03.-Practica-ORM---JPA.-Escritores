@@ -18,8 +18,18 @@ public class DialogAniadirAutor extends javax.swing.JDialog {
     private ctrlJpaAutor ctrlAutor = new ctrlJpaAutor(emf);
     private ctrlJpaLibro ctrlLibro = new ctrlJpaLibro(emf);
     //Modelos
-    private DefaultTableModel modelLibros = new DefaultTableModel();
-    private DefaultTableModel modelLibrosSelec = new DefaultTableModel();
+    private DefaultTableModel modelLibros = new DefaultTableModel(){
+        @Override
+        public boolean isCellEditable(int row, int column){
+            return false;
+        }
+    };
+    private DefaultTableModel modelLibrosSelec = new DefaultTableModel(){
+        @Override
+        public boolean isCellEditable(int row, int column){
+            return false;
+        }
+    };
     
     public DialogAniadirAutor(java.awt.Frame parent, boolean modal) {
         super(parent, modal);

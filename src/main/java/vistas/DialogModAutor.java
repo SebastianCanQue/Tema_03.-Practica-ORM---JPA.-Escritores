@@ -21,8 +21,18 @@ public class DialogModAutor extends javax.swing.JDialog {
     private ctrlJpaAutor ctrlAutor = new ctrlJpaAutor(emf);
     private ctrlJpaLibro ctrlLibro = new ctrlJpaLibro(emf);
     //Modelos
-    private DefaultTableModel modelLibros = new DefaultTableModel();
-    private DefaultTableModel modelLibrosSelec = new DefaultTableModel();
+    private DefaultTableModel modelLibros = new DefaultTableModel(){
+        @Override
+        public boolean isCellEditable(int row, int column){
+            return false;
+        }
+    };
+    private DefaultTableModel modelLibrosSelec = new DefaultTableModel(){
+        @Override
+        public boolean isCellEditable(int row, int column){
+            return false;
+        }
+    };
     private Autor autor = null;
 
     public DialogModAutor(java.awt.Frame parent, boolean modal, Autor autor) {

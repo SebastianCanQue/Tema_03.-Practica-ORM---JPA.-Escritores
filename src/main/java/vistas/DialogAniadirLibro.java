@@ -21,9 +21,19 @@ public class DialogAniadirLibro extends javax.swing.JDialog {
     private ctrlJpaLibro ctrlLibro = new ctrlJpaLibro(emf);
     private ctrlJpaCategoria ctrlCateg = new ctrlJpaCategoria(emf);
     //Modelos
-    private DefaultTableModel modelCateg = new DefaultTableModel();
-    private DefaultTableModel modelCategLibro = new DefaultTableModel();
-    
+    private DefaultTableModel modelCateg = new DefaultTableModel() {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
+    private DefaultTableModel modelCategLibro = new DefaultTableModel() {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
+
     public DialogAniadirLibro(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -234,12 +244,12 @@ public class DialogAniadirLibro extends javax.swing.JDialog {
     }//GEN-LAST:event_jTextFieldNombreActionPerformed
 
     private void jButtonAniadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAniadirActionPerformed
-        if(jTextFieldNombre.getText().equals("") || jTextFieldPrecio.getText().equals("")){
+        if (jTextFieldNombre.getText().equals("") || jTextFieldPrecio.getText().equals("")) {
             JOptionPane.showMessageDialog(null, "Compruebe que todos los campos esten rellenos");
-        }else{
-            if(jDateChooserFecha.getDate() == null){
+        } else {
+            if (jDateChooserFecha.getDate() == null) {
                 JOptionPane.showMessageDialog(null, "Seleccione una fecha");
-            }else{
+            } else {
                 Date fecha = jDateChooserFecha.getDate();
                 BigDecimal bD = new BigDecimal(jTextFieldPrecio.getText());
                 Set<Categoria> listaCateg = new HashSet<Categoria>();
@@ -259,9 +269,13 @@ public class DialogAniadirLibro extends javax.swing.JDialog {
     private void jTextFieldPrecioKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPrecioKeyTyped
         char c = evt.getKeyChar();
         String texto = jTextFieldPrecio.getText();
-        if(!Character.isDigit(c) && c != '.'){
+        if (!Character.isDigit(c) && c != '.') {
             evt.consume();
-        }else if(c == '.' && texto.contains(".")){
+        }else if (c == '.' && texto.contains(".")) {
+            evt.consume();
+        } else if (c == '.' && texto.isEmpty()) {
+            evt.consume();
+        } else if (texto.endsWith(".") && c == '\n') {
             evt.consume();
         }
     }//GEN-LAST:event_jTextFieldPrecioKeyTyped
@@ -355,13 +369,13 @@ public class DialogAniadirLibro extends javax.swing.JDialog {
     // End of variables declaration//GEN-END:variables
 
     //Metodo para rellenar el JComboBoc
-    public void rellenarJComboBox(){
+    public void rellenarJComboBox() {
         jComboBoxAutores.removeAllItems();
-        for(Autor a : ctrlAutor.obtenerAllAutores()){
+        for (Autor a : ctrlAutor.obtenerAllAutores()) {
             jComboBoxAutores.addItem(a.getNomAutor());
         }
     }
-    
+
     private void initTablas(List<Categoria> listaCategorias) {
         for (Categoria c : listaCategorias) {
             Object[] fila = {c.getIdCategoria(), c.getNomCategoria()};

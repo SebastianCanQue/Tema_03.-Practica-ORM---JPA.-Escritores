@@ -9,7 +9,7 @@
       <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/BD_JPA_EJ_01?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
       <property name="jakarta.persistence.jdbc.user" value="ADMIN"/>
       <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-      <property name="jakarta.persistence.jdbc.password" value="ADMIN"/>
+      <property name="jakarta.persistence.jdbc.password" value="manager"/>
       <property name="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>
       <property name="jakarta.persistence.schema-generation.database.action" value="update"/>
     </properties>

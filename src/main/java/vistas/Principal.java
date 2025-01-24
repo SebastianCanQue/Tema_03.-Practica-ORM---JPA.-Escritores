@@ -1,5 +1,7 @@
 package vistas;
 
+import javax.swing.*;
+
 /**
  *
  * @author Sebastián Candelas Quero
@@ -74,31 +76,64 @@ public class Principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuAutoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuAutoresActionPerformed
-        
+
     }//GEN-LAST:event_jMenuAutoresActionPerformed
 
     private void jMenuAutoresMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuAutoresMouseClicked
-        //Cerramos la venta principal
-        dispose();
-        //Creamos la nueva ventana y la mostramos
-        VistaAutores vAutores = new VistaAutores();
-        vAutores.setVisible(true);
+        javax.swing.JDialog cargandoDialog = new javax.swing.JDialog(this, "Cargando...", true);
+        cargandoDialog.setSize(200, 100);
+        cargandoDialog.setLocationRelativeTo(this);
+        cargandoDialog.setDefaultCloseOperation(javax.swing.JDialog.DO_NOTHING_ON_CLOSE);
+
+        javax.swing.JLabel label = new javax.swing.JLabel("Cargando...", javax.swing.SwingConstants.CENTER);
+        cargandoDialog.add(label);
+        SwingUtilities.invokeLater(() -> cargandoDialog.setVisible(true));
+        this.dispose();
+        SwingUtilities.invokeLater(() -> {
+            VistaAutores frame = new VistaAutores();
+            frame.setVisible(true);
+            frame.toFront();
+
+            cargandoDialog.dispose();
+        });
     }//GEN-LAST:event_jMenuAutoresMouseClicked
 
     private void jMenuLibrosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuLibrosMouseClicked
-        //Cerramos la ventana principal
-        dispose();
-        //Creamos la nueva ventana y la mostramos
-        VistaLibros vLibros = new VistaLibros();
-        vLibros.setVisible(true);
+        javax.swing.JDialog cargandoDialog = new javax.swing.JDialog(this, "Cargando...", true);
+        cargandoDialog.setSize(200, 100);
+        cargandoDialog.setLocationRelativeTo(this);
+        cargandoDialog.setDefaultCloseOperation(javax.swing.JDialog.DO_NOTHING_ON_CLOSE);
+
+        javax.swing.JLabel label = new javax.swing.JLabel("Cargando...", javax.swing.SwingConstants.CENTER);
+        cargandoDialog.add(label);
+        SwingUtilities.invokeLater(() -> cargandoDialog.setVisible(true));
+        this.dispose();
+        SwingUtilities.invokeLater(() -> {
+            VistaLibros frame = new VistaLibros();
+            frame.setVisible(true);
+            frame.toFront();
+
+            cargandoDialog.dispose();
+        });
     }//GEN-LAST:event_jMenuLibrosMouseClicked
 
     private void jMenuCategMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuCategMouseClicked
-        //Cerramos la ventana principal
-        dispose();
-        //Creamos la nueva ventana y la mostramos
-        VistaCategorias vCateg = new VistaCategorias();
-        vCateg.setVisible(true);
+        javax.swing.JDialog cargandoDialog = new javax.swing.JDialog(this, "Cargando...", true);
+        cargandoDialog.setSize(200, 100);
+        cargandoDialog.setLocationRelativeTo(this);
+        cargandoDialog.setDefaultCloseOperation(javax.swing.JDialog.DO_NOTHING_ON_CLOSE);
+
+        javax.swing.JLabel label = new javax.swing.JLabel("Cargando...", javax.swing.SwingConstants.CENTER);
+        cargandoDialog.add(label);
+        SwingUtilities.invokeLater(() -> cargandoDialog.setVisible(true));
+        this.dispose();
+        SwingUtilities.invokeLater(() -> {
+            VistaCategorias frame = new VistaCategorias();
+            frame.setVisible(true);
+            frame.toFront();
+
+            cargandoDialog.dispose();
+        });
     }//GEN-LAST:event_jMenuCategMouseClicked
 
     /**

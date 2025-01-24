@@ -23,16 +23,29 @@ public class DialogModLibro extends javax.swing.JDialog {
     private ctrlJpaLibro ctrlLibro = new ctrlJpaLibro(emf);
     private ctrlJpaCategoria ctrlCateg = new ctrlJpaCategoria(emf);
     //Modelos
-    private DefaultTableModel modelCateg = new DefaultTableModel();
-    private DefaultTableModel modelCategLibro = new DefaultTableModel();
+    private DefaultTableModel modelCateg = new DefaultTableModel() {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
+    private DefaultTableModel modelCategLibro = new DefaultTableModel() {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
     private Libro libro;
 
-    public DialogModLibro(java.awt.Frame parent, boolean modal) {
+    public DialogModLibro(java.awt.Frame parent, boolean modal, Libro libro) {
         super(parent, modal);
         initComponents();
+        this.libro = libro;
         this.setLocationRelativeTo(null);
         this.setTitle("Modificar un Libro");
         initModelosTablas();
+        initJComboBox();
+        rellenarComponentes();
         initTablas(ctrlCateg.obtenerCategorias());
     }
 
@@ -256,9 +269,13 @@ public class DialogModLibro extends javax.swing.JDialog {
                 }
                 BigDecimal bD = new BigDecimal(jTextFieldPrecio.getText());
                 Autor autor = ctrlAutor.obtenerAutorXNombre(jComboBoxAutores.getSelectedItem());
-                Libro libroMod = new Libro(jTextFieldTitulo.getText(), jDateChooserFecha.getDate(), bD, listaCateg, autor);
+                libro.setTitulo(jTextFieldTitulo.getText());
+                libro.setFechaPublicacion(jDateChooserFecha.getDate());
+                libro.setPrecio(bD);
+                libro.setCategoriasSet(listaCateg);
+                libro.setAutor(autor);
                 try {
-                    ctrlLibro.editar(libroMod);
+                    ctrlLibro.editar(libro);
                     this.dispose();
                 } catch (NonexistentEntityException ex) {
                     JOptionPane.showMessageDialog(null, ex);
@@ -302,59 +319,14 @@ public class DialogModLibro extends javax.swing.JDialog {
         String texto = jTextFieldPrecio.getText();
         if (!Character.isDigit(c) && c != '.') {
             evt.consume();
-        } else if (c == '.' && texto.contains(".")) {
+        }else if (c == '.' && texto.contains(".")) {
+            evt.consume();
+        }else if (c == '.' && texto.isEmpty()) {
+            evt.consume();
+        }else if (texto.endsWith(".") && c == '\n') {
             evt.consume();
         }
     }//GEN-LAST:event_jTextFieldPrecioKeyTyped
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DialogModLibro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DialogModLibro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DialogModLibro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DialogModLibro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                DialogModLibro dialog = new DialogModLibro(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonEliminar;
@@ -398,6 +370,22 @@ public class DialogModLibro extends javax.swing.JDialog {
         modelCategLibro.addColumn("Id");
         modelCategLibro.addColumn("Nombre");
         jTableCategLibro.setModel(modelCategLibro);
+    }
+
+    private void rellenarComponentes() {
+        jTextFieldTitulo.setText(libro.getTitulo());
+        jTextFieldPrecio.setText(libro.getPrecio().toString());
+        jComboBoxAutores.setSelectedItem(libro.getAutor().getNomAutor());
+        jDateChooserFecha.setDate(libro.getFechaPublicacion());
+        List<Categoria> listCat = new ArrayList<Categoria>();
+        listCat.addAll(libro.getCategoriasSet());
+    }
+
+    private void initJComboBox() {
+        jComboBoxAutores.removeAllItems();
+        for (Autor a : ctrlAutor.obtenerAllAutores()) {
+            jComboBoxAutores.addItem(a.getNomAutor());
+        }
     }
 
 }

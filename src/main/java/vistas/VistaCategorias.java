@@ -1,13 +1,9 @@
 package vistas;
 
 import controladores.*;
-import controladores.exceptions.NonexistentEntityException;
 import jakarta.persistence.*;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelos.*;
@@ -21,17 +17,27 @@ public class VistaCategorias extends javax.swing.JFrame {
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("uniPersistencia");
     ;
     //Controladores de las clases
-    private ctrlJpaAutor ctrlAutores = new ctrlJpaAutor(emf);
     private ctrlJpaCategoria ctrlCateg = new ctrlJpaCategoria(emf);
     private ctrlJpaLibro ctrlLibro = new ctrlJpaLibro(emf);
     //Modelos de las tablas
-    private DefaultTableModel modelCateg = new DefaultTableModel();
-    private DefaultTableModel modelLibros = new DefaultTableModel();
+    private DefaultTableModel modelCateg = new DefaultTableModel(){
+        @Override
+        public boolean isCellEditable(int row, int column){
+            return false;
+        }
+    };
+    private DefaultTableModel modelLibros = new DefaultTableModel(){
+        @Override
+        public boolean isCellEditable(int row, int column){
+            return false;
+        }
+    };
 
     public VistaCategorias() {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("CRUD Categorias - Sebastián Candelas Quero");
+        this.toFront();
         inicModelosTablas();
         rellenarTablaCategorias(ctrlCateg.obtenerCategorias());
     }
@@ -177,7 +183,7 @@ public class VistaCategorias extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuVolverMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuVolverMouseClicked
-        //Cerramos la venta autores
+        //Cerramos la ventana Categorias
         dispose();
         //Creamos la nueva ventana principal y la mostramos
         Principal principal = new Principal();
@@ -232,18 +238,14 @@ public class VistaCategorias extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuBajaMouseClicked
 
     private void jMenuModMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuModMouseClicked
-//        if(jTableCategorias.getSelectedRow() == -1){
-//            JOptionPane.showMessageDialog(null, "Seleccione un autor de la tabla para modificar");
-//        }else{
-//            Object idAutor = modelCateg.getValueAt(jTableCategorias.getSelectedRow(), 0);
-//            Autor autorVentana = ctrlAutores.obtenerAutorXId(idAutor);
-//            System.out.println("a");
-//            System.out.println(autorVentana);
-//            DialogModAutor modAutor = new DialogModAutor(this, rootPaneCheckingEnabled);
-//            System.out.println(".------------------------------------------------------------------------------------------------------------");
-//            modAutor.setAutor(autorVentana);
-//            modAutor.setVisible(true);
-//        }
+        if(jTableCategorias.getSelectedRow() == -1){
+            JOptionPane.showMessageDialog(null, "Seleccione una categoria de la tabla para modificar");
+        }else{
+            Object idCat = modelCateg.getValueAt(jTableCategorias.getSelectedRow(), 0);
+            Categoria catVentana = ctrlCateg.obtenerCategXId(idCat);
+            DialogModCategoria modCat = new DialogModCategoria(this, rootPaneCheckingEnabled, catVentana);
+            modCat.setVisible(true);
+        }
     }//GEN-LAST:event_jMenuModMouseClicked
 
     /**

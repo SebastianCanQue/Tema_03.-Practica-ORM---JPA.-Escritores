@@ -1,13 +1,9 @@
 package vistas;
 
 import controladores.*;
-import controladores.exceptions.NonexistentEntityException;
 import jakarta.persistence.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.text.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelos.*;
@@ -25,12 +21,18 @@ public class VistaLibros extends javax.swing.JFrame {
     private ctrlJpaCategoria ctrlCateg = new ctrlJpaCategoria(emf);
     private ctrlJpaLibro ctrlLibro = new ctrlJpaLibro(emf);
     //Modelos de las tablas
-    private DefaultTableModel modelLibros = new DefaultTableModel();
+    private DefaultTableModel modelLibros = new DefaultTableModel(){
+        @Override
+        public boolean isCellEditable(int row, int column){
+            return false;
+        }
+    };
 
     public VistaLibros() {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("CRUD Libros - Sebastián Candelas Quero");
+        this.toFront();
         inicModelosTablas();
         inicModelComboBox();
         rellenarTablaLibros(ctrlLibro.obtenerAllLibros());
@@ -50,7 +52,8 @@ public class VistaLibros extends javax.swing.JFrame {
         jLabelAutoresCat = new javax.swing.JLabel();
         jComboBoxAutores = new javax.swing.JComboBox<>();
         jLabelCatg = new javax.swing.JLabel();
-        jTextFieldCategLibro = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextAreaCategLibro = new javax.swing.JTextArea();
         jMenuBarAutores = new javax.swing.JMenuBar();
         jMenuVolver = new javax.swing.JMenu();
         jMenuAlta = new javax.swing.JMenu();
@@ -88,7 +91,10 @@ public class VistaLibros extends javax.swing.JFrame {
         jLabelCatg.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabelCatg.setText("Categorías del libro seleccionado: ");
 
-        jTextFieldCategLibro.setEditable(false);
+        jTextAreaCategLibro.setEditable(false);
+        jTextAreaCategLibro.setColumns(20);
+        jTextAreaCategLibro.setRows(5);
+        jScrollPane2.setViewportView(jTextAreaCategLibro);
 
         jMenuVolver.setText("Volver");
         jMenuVolver.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -146,8 +152,8 @@ public class VistaLibros extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(214, 214, 214)
                         .addComponent(jLabelCatg)
-                        .addGap(67, 67, 67)
-                        .addComponent(jTextFieldCategLibro, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(52, 52, 52)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(14, 14, 14)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 913, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -162,11 +168,14 @@ public class VistaLibros extends javax.swing.JFrame {
                     .addComponent(jComboBoxAutores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(44, 44, 44)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(51, 51, 51)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextFieldCategLibro, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelCatg))
-                .addContainerGap(58, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(106, 106, 106)
+                        .addComponent(jLabelCatg))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(73, 73, 73)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(83, Short.MAX_VALUE))
         );
 
         pack();
@@ -186,11 +195,11 @@ public class VistaLibros extends javax.swing.JFrame {
             int row = jTableLibros.getSelectedRow();
             Object idLibro = modelLibros.getValueAt(row, 0);
             colecCategorias = ctrlLibro.obtenerLibroXId(idLibro).getCategoriasSet();
-            String texto = "";
+            StringBuilder texto = new StringBuilder();
             for (Categoria c : colecCategorias) {
-                texto += c.getNomCategoria() + " ";
+                texto.append(c.getNomCategoria()).append("\n");
             }
-            jTextFieldCategLibro.setText(texto);
+            jTextAreaCategLibro.setText(texto.toString());
         }
     }//GEN-LAST:event_jTableLibrosMouseClicked
 
@@ -232,7 +241,15 @@ public class VistaLibros extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuBajaMouseClicked
 
     private void jMenuModMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuModMouseClicked
-
+        if(jTableLibros.getSelectedRow() == -1){
+            JOptionPane.showMessageDialog(null, "Seleccione un libro de la tabla para modificar");
+        }else{
+            Object idLibro = modelLibros.getValueAt(jTableLibros.getSelectedRow(), 0);
+            Libro libroVentana = ctrlLibro.obtenerLibroXId(idLibro);
+            DialogModLibro modLibro = new DialogModLibro(this, rootPaneCheckingEnabled, libroVentana);
+            modLibro.setVisible(true);
+            rellenarTablaLibros(ctrlLibro.obtenerAllLibros());
+        }
     }//GEN-LAST:event_jMenuModMouseClicked
 
     /**
@@ -284,8 +301,9 @@ public class VistaLibros extends javax.swing.JFrame {
     private javax.swing.JMenu jMenuRefrescar;
     private javax.swing.JMenu jMenuVolver;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTableLibros;
-    private javax.swing.JTextField jTextFieldCategLibro;
+    private javax.swing.JTextArea jTextAreaCategLibro;
     // End of variables declaration//GEN-END:variables
 
     private void inicModelosTablas() {
@@ -313,12 +331,4 @@ public class VistaLibros extends javax.swing.JFrame {
             jComboBoxAutores.addItem(a.getNomAutor());
         }
     }
-
-//    public static Autor getModAutor(){
-//        Autor autor = null;
-//        EntityManager
-//        ctrlJpaAutor ctrlStatic = new ctrlJpaAutor(emf);
-//        autor = ctrlAutores.obtenerAutorXId(modelAutores.getValueAt(jTableAutores.getSelectedRow(), 0));
-//        return autor;
-//    }
 }
