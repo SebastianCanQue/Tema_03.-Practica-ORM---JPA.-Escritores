@@ -206,4 +206,21 @@ public class ctrlJpaLibro {
         }
         return listaLibros;
     }
+    
+    //Metodo para obtener libro por su nombre
+    public Libro obtenerLibroXTitulo(Object titulo){
+        //Creamos el EM 
+        EntityManager em = null;
+        Libro libro = null;
+        try{
+            em = getEntityManager();
+            Query consulta = em.createNamedQuery("Libros.findByTitulo");
+            consulta.setParameter("titulo", titulo);
+            libro = (Libro)consulta.getSingleResult();
+            libro.getAutor().getClass();
+        }finally{
+            em.close();
+        }
+        return libro;
+    }
 }

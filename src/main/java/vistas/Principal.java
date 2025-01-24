@@ -42,6 +42,11 @@ public class Principal extends javax.swing.JFrame {
         jMenuBarPrincipal.add(jMenuAutores);
 
         jMenuCateg.setText("Categorías");
+        jMenuCateg.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenuCategMouseClicked(evt);
+            }
+        });
         jMenuBarPrincipal.add(jMenuCateg);
 
         jMenuLibros.setText("Libros");
@@ -87,6 +92,14 @@ public class Principal extends javax.swing.JFrame {
         VistaLibros vLibros = new VistaLibros();
         vLibros.setVisible(true);
     }//GEN-LAST:event_jMenuLibrosMouseClicked
+
+    private void jMenuCategMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuCategMouseClicked
+        //Cerramos la ventana principal
+        dispose();
+        //Creamos la nueva ventana y la mostramos
+        VistaCategorias vCateg = new VistaCategorias();
+        vCateg.setVisible(true);
+    }//GEN-LAST:event_jMenuCategMouseClicked
 
     /**
      * @param args the command line arguments
