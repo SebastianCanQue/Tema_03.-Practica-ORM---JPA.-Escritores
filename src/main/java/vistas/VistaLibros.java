@@ -186,9 +186,11 @@ public class VistaLibros extends javax.swing.JFrame {
             int row = jTableLibros.getSelectedRow();
             Object idLibro = modelLibros.getValueAt(row, 0);
             colecCategorias = ctrlLibro.obtenerLibroXId(idLibro).getCategoriasSet();
+            String texto = "";
             for (Categoria c : colecCategorias) {
-                jTextFieldCategLibro.setText(c.getNomCategoria() + "\n");
+                texto += c.getNomCategoria() + " ";
             }
+            jTextFieldCategLibro.setText(texto);
         }
     }//GEN-LAST:event_jTableLibrosMouseClicked
 

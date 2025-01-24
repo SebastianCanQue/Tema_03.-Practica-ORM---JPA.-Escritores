@@ -241,9 +241,11 @@ public class VistaAutores extends javax.swing.JFrame {
             int row = jTableLibros.getSelectedRow();
             Object nombreLi = modelLibros.getValueAt(row, 0);
             colecCategorias = ctrlLibro.obtenerCategoriasLibro(nombreLi);
-            for(Categoria c : colecCategorias){
-                jTextFieldCategLibro.setText(c.getNomCategoria() + "\n");
+            String texto = "";
+            for (Categoria c : colecCategorias) {
+                texto = c.getNomCategoria() + "\n";
             }
+            jTextFieldCategLibro.setText(texto);
         }
     }//GEN-LAST:event_jTableLibrosMouseClicked
 
@@ -284,12 +286,9 @@ public class VistaAutores extends javax.swing.JFrame {
         }else{
             Object idAutor = modelAutores.getValueAt(jTableAutores.getSelectedRow(), 0);
             Autor autorVentana = ctrlAutores.obtenerAutorXId(idAutor);
-            System.out.println("a");
-            System.out.println(autorVentana);
-            DialogModAutor modAutor = new DialogModAutor(this, rootPaneCheckingEnabled);
-            System.out.println(".------------------------------------------------------------------------------------------------------------");
-            modAutor.setAutor(autorVentana);
+            DialogModAutor modAutor = new DialogModAutor(this, rootPaneCheckingEnabled, autorVentana);
             modAutor.setVisible(true);
+            rellenarTablaAutores(ctrlAutores.obtenerAllAutores());
         }
     }//GEN-LAST:event_jMenuModMouseClicked
 

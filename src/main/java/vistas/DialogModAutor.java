@@ -25,11 +25,12 @@ public class DialogModAutor extends javax.swing.JDialog {
     private DefaultTableModel modelLibrosSelec = new DefaultTableModel();
     private Autor autor = null;
 
-    public DialogModAutor(java.awt.Frame parent, boolean modal) {
+    public DialogModAutor(java.awt.Frame parent, boolean modal, Autor autor) {
         super(parent, modal);
         initComponents();
         this.setLocationRelativeTo(null);
-        this.setTitle("Añadir un Autor");
+        this.setTitle("Modificar un Autor");
+        this.autor = autor;
         rellenarComponentes();
         initModelosTablas();
         initTablas(ctrlLibro.obtenerAllLibros());
@@ -203,16 +204,15 @@ public class DialogModAutor extends javax.swing.JDialog {
                 libro = ctrlLibro.obtenerLibroXId(modelLibrosSelec.getValueAt(i, 0));
                 listaLibros.add(libro);
             }
-            Autor autorMod = new Autor(jTextFieldNombre.getText(), listaLibros);
+            autor.setNomAutor(jTextFieldNombre.getText());
+            autor.setLibrosSet(listaLibros);
             try {
-                ctrlAutor.editar(autorMod);
+                ctrlAutor.editar(autor);
                 this.dispose();
             } catch (NonexistentEntityException ex) {
-                JOptionPane.showMessageDialog(null, ex);
-                Logger.getLogger(DialogModAutor.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, ex);
-                Logger.getLogger(DialogModAutor.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         }
     }//GEN-LAST:event_jButtonModificarActionPerformed
@@ -238,51 +238,6 @@ public class DialogModAutor extends javax.swing.JDialog {
             modelLibrosSelec.addRow(fila);
         }
     }//GEN-LAST:event_jButtonSelecActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DialogModAutor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DialogModAutor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DialogModAutor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DialogModAutor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                DialogModAutor dialog = new DialogModAutor(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonEliminar;
@@ -320,10 +275,6 @@ public class DialogModAutor extends javax.swing.JDialog {
         modelLibrosSelec.addColumn("Id");
         modelLibrosSelec.addColumn("Nombre");
         jTableLibrosSelec.setModel(modelLibrosSelec);
-    }
-
-    public void setAutor(Autor aut){
-        autor = aut;
     }
 
     private void rellenarComponentes() {

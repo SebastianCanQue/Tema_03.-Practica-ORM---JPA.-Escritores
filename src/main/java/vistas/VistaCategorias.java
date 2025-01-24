@@ -16,12 +16,10 @@ import modelos.*;
  *
  * @author Sebastián Candelas Quero
  */
-
 public class VistaCategorias extends javax.swing.JFrame {
-    
-    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("uniPersistencia");;
-    //VistasCrud
-    private DialogAniadirAutor aniadirAut;
+
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("uniPersistencia");
+    ;
     //Controladores de las clases
     private ctrlJpaAutor ctrlAutores = new ctrlJpaAutor(emf);
     private ctrlJpaCategoria ctrlCateg = new ctrlJpaCategoria(emf);
@@ -29,8 +27,7 @@ public class VistaCategorias extends javax.swing.JFrame {
     //Modelos de las tablas
     private DefaultTableModel modelCateg = new DefaultTableModel();
     private DefaultTableModel modelLibros = new DefaultTableModel();
-    
-    
+
     public VistaCategorias() {
         initComponents();
         this.setLocationRelativeTo(null);
@@ -188,7 +185,7 @@ public class VistaCategorias extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuVolverMouseClicked
 
     private void jTableCategoriasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableCategoriasMouseClicked
-        if(jTableCategorias.getSelectedRow() != -1){
+        if (jTableCategorias.getSelectedRow() != -1) {
             Set<Libro> colecLibros;
             int row = jTableCategorias.getSelectedRow();
             Object idCategoria = modelCateg.getValueAt(row, 0);
@@ -198,7 +195,7 @@ public class VistaCategorias extends javax.swing.JFrame {
     }//GEN-LAST:event_jTableCategoriasMouseClicked
 
     private void jTableLibrosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableLibrosMouseClicked
-        if(jTableLibros.getSelectedRow() != -1){
+        if (jTableLibros.getSelectedRow() != -1) {
             Libro libro;
             int row = jTableLibros.getSelectedRow();
             Object nombreLi = modelLibros.getValueAt(row, 0);
@@ -208,9 +205,9 @@ public class VistaCategorias extends javax.swing.JFrame {
     }//GEN-LAST:event_jTableLibrosMouseClicked
 
     private void jMenuAltaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuAltaMouseClicked
-//        aniadirAut = new DialogAniadirAutor(this, rootPaneCheckingEnabled);
-//        aniadirAut.setVisible(true);
-//        rellenarTablaCategorias(ctrlAutores.obtenerAllAutores());
+        DialogAniadirCategoria aniadirCat = new DialogAniadirCategoria(this, rootPaneCheckingEnabled);
+        aniadirCat.setVisible(true);
+        rellenarTablaCategorias(ctrlCateg.obtenerCategorias());
     }//GEN-LAST:event_jMenuAltaMouseClicked
 
     private void jMenuRefrescarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuRefrescarMouseClicked
@@ -218,23 +215,20 @@ public class VistaCategorias extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuRefrescarMouseClicked
 
     private void jMenuBajaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuBajaMouseClicked
-//        if(jTableCategorias.getSelectedRow() == -1){
-//            JOptionPane.showMessageDialog(null, "Seleccione un autor de la tabla para dar de baja");
-//        }else{
-//            int selec = JOptionPane.showConfirmDialog(null, "¿Seguro que desea borrar el autor seleccionado?", "Confirmación", JOptionPane.YES_NO_OPTION);
-//            if(selec == JOptionPane.YES_OPTION){
-//                Object idAutor = modelCateg.getValueAt(jTableCategorias.getSelectedRow(), 0);
-//                Autor autor = ctrlAutores.obtenerAutorXId(idAutor);
-//                if(autor.getLibrosSet().size() > 0){
-//                    JOptionPane.showMessageDialog(null, "No se pueden borrar autores que tengan libros");
-//                }else{
-//                    ctrlAutores.baja(autor);
-//                    rellenarTablaCategorias(ctrlAutores.obtenerAllAutores());
-//                }
-//            }else{
-//                JOptionPane.showMessageDialog(null, "Baja cancelada");
-//            }
-//        }
+        if (jTableCategorias.getSelectedRow() == -1) {
+            JOptionPane.showMessageDialog(null, "Seleccione una categoria de la tabla para dar de baja");
+        } else {
+            int selec = JOptionPane.showConfirmDialog(null, "¿Seguro que desea borrar la categoría seleccionada?", "Confirmación", JOptionPane.YES_NO_OPTION);
+            if (selec == JOptionPane.YES_OPTION) {
+                Object idCateg = modelCateg.getValueAt(jTableCategorias.getSelectedRow(), 0);
+                Categoria cat = ctrlCateg.obtenerCategXId(idCateg);
+                ctrlCateg.baja(cat);
+                rellenarTablaCategorias(ctrlCateg.obtenerCategorias());
+                rellenarTablaLibros(new HashSet<Libro>());
+            } else {
+                JOptionPane.showMessageDialog(null, "Baja cancelada");
+            }
+        }
     }//GEN-LAST:event_jMenuBajaMouseClicked
 
     private void jMenuModMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuModMouseClicked
@@ -315,12 +309,12 @@ public class VistaCategorias extends javax.swing.JFrame {
         modelLibros.addColumn("Fecha Publicación");
         modelLibros.addColumn("Precio");
         jTableLibros.setModel(modelLibros);
-        
+
     }
 
     private void rellenarTablaCategorias(List<Categoria> listaCategoria) {
         modelCateg.setRowCount(0);
-        for(Categoria c : listaCategoria){
+        for (Categoria c : listaCategoria) {
             Object[] fila = {c.getIdCategoria(), c.getNomCategoria()};
             modelCateg.addRow(fila);
         }
@@ -329,7 +323,7 @@ public class VistaCategorias extends javax.swing.JFrame {
     private void rellenarTablaLibros(Set<Libro> colecLibros) {
         modelLibros.setRowCount(0);
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        for(Libro l : colecLibros){
+        for (Libro l : colecLibros) {
             Object[] fila = {l.getTitulo(), sdf.format(l.getFechaPublicacion()), l.getPrecio()};
             modelLibros.addRow(fila);
         }

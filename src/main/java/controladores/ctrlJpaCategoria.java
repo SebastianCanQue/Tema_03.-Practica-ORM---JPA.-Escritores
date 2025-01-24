@@ -1,7 +1,7 @@
 package controladores;
 
 import jakarta.persistence.*;
-import java.util.List;
+import java.util.*;
 import modelos.*;
 
 /**
@@ -26,6 +26,40 @@ public class ctrlJpaCategoria {
     //Metodo para crear el EM
     public EntityManager getEntityManager(){
         return this.emf.createEntityManager();
+    }
+    
+    //Metodo para crear una categoria
+    public void crear(Categoria cat){
+        EntityManager em = null;
+        try{
+            em = getEntityManager();
+            em.getTransaction().begin();
+            Set<Libro> listLibros = new HashSet<Libro>();
+            cat.setLibrosSet(listLibros);
+            em.persist(cat);
+            em.getTransaction().commit();
+        }finally{
+            em.close();
+        }
+    }
+    
+    //Metodo para dar de baja una categoria
+    public void baja(Categoria cat){
+        EntityManager em = null;
+        try{
+            em = getEntityManager();
+            em.getTransaction().begin();
+            cat = em.getReference(Categoria.class, cat.getIdCategoria());
+            for(Libro l : cat.getLibrosSet()){
+                l = em.getReference(Libro.class, l.getIdLibros());
+                l.getCategoriasSet().remove(cat);
+                l = em.merge(l);
+            }
+            em.remove(cat);
+            em.getTransaction().commit();
+        }finally{
+            em.close();
+        }
     }
     
     //Metodo para obtener las categorías
