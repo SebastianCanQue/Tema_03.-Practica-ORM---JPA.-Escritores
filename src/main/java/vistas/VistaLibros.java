@@ -20,8 +20,6 @@ public class VistaLibros extends javax.swing.JFrame {
 
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("uniPersistencia");
     ;
-    //VistasCrud
-    private DialogAniadirAutor aniadirAut;
     //Controladores de las clases
     private ctrlJpaAutor ctrlAutore = new ctrlJpaAutor(emf);
     private ctrlJpaCategoria ctrlCateg = new ctrlJpaCategoria(emf);
@@ -204,9 +202,9 @@ public class VistaLibros extends javax.swing.JFrame {
     }//GEN-LAST:event_jComboBoxAutoresItemStateChanged
 
     private void jMenuAltaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuAltaMouseClicked
-//        aniadirAut = new DialogAniadirAutor(this, rootPaneCheckingEnabled);
-//        aniadirAut.setVisible(true);
-//        rellenarTablaAutores(ctrlAutores.obtenerAllAutores());
+        DialogAniadirLibro aniadirLibro = new DialogAniadirLibro(this, rootPaneCheckingEnabled);
+        aniadirLibro.setVisible(true);
+        rellenarTablaLibros(ctrlLibro.obtenerAllLibros());
     }//GEN-LAST:event_jMenuAltaMouseClicked
 
     private void jMenuRefrescarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuRefrescarMouseClicked

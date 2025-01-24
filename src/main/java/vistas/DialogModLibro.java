@@ -1,10 +1,12 @@
 package vistas;
 
-import com.toedter.calendar.JCalendar;
 import controladores.*;
+import controladores.exceptions.NonexistentEntityException;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelos.*;
@@ -13,7 +15,7 @@ import modelos.*;
  *
  * @author Sebastián Candelas Quero
  */
-public class DialogAniadirLibro extends javax.swing.JDialog {
+public class DialogModLibro extends javax.swing.JDialog {
 
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("uniPersistencia");
     //Controladores
@@ -23,13 +25,13 @@ public class DialogAniadirLibro extends javax.swing.JDialog {
     //Modelos
     private DefaultTableModel modelCateg = new DefaultTableModel();
     private DefaultTableModel modelCategLibro = new DefaultTableModel();
-    
-    public DialogAniadirLibro(java.awt.Frame parent, boolean modal) {
+    private Libro libro;
+
+    public DialogModLibro(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         this.setLocationRelativeTo(null);
-        this.setTitle("Añadir un Libro");
-        rellenarJComboBox();
+        this.setTitle("Modificar un Libro");
         initModelosTablas();
         initTablas(ctrlCateg.obtenerCategorias());
     }
@@ -43,16 +45,10 @@ public class DialogAniadirLibro extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabelAniadir = new javax.swing.JLabel();
-        jTextFieldNombre = new javax.swing.JTextField();
+        jLabelTitle = new javax.swing.JLabel();
+        jTextFieldTitulo = new javax.swing.JTextField();
         jLabelNom = new javax.swing.JLabel();
-        jButtonAniadir = new javax.swing.JButton();
-        jLabelAutor = new javax.swing.JLabel();
-        jComboBoxAutores = new javax.swing.JComboBox<>();
-        jLabelPrecio = new javax.swing.JLabel();
-        jTextFieldPrecio = new javax.swing.JTextField();
-        jLabelFecha = new javax.swing.JLabel();
-        jDateChooserFecha = new com.toedter.calendar.JDateChooser();
+        jButtonModificar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableCateg = new javax.swing.JTable();
         jButtonEliminar = new javax.swing.JButton();
@@ -61,39 +57,31 @@ public class DialogAniadirLibro extends javax.swing.JDialog {
         jTableCategLibro = new javax.swing.JTable();
         jLabelCateg = new javax.swing.JLabel();
         jLabelCategLibro = new javax.swing.JLabel();
+        jLabelAutor = new javax.swing.JLabel();
+        jLabelPrecio = new javax.swing.JLabel();
+        jLabelFecha = new javax.swing.JLabel();
+        jComboBoxAutores = new javax.swing.JComboBox<>();
+        jTextFieldPrecio = new javax.swing.JTextField();
+        jDateChooserFecha = new com.toedter.calendar.JDateChooser();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jLabelAniadir.setText("Añadir un nuevo Libro");
+        jLabelTitle.setText("Modificar Libro");
 
-        jTextFieldNombre.addActionListener(new java.awt.event.ActionListener() {
+        jTextFieldTitulo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldNombreActionPerformed(evt);
+                jTextFieldTituloActionPerformed(evt);
             }
         });
 
         jLabelNom.setText("Titulo");
 
-        jButtonAniadir.setText("Añadir");
-        jButtonAniadir.addActionListener(new java.awt.event.ActionListener() {
+        jButtonModificar.setText("Modificar");
+        jButtonModificar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonAniadirActionPerformed(evt);
+                jButtonModificarActionPerformed(evt);
             }
         });
-
-        jLabelAutor.setText("Autor");
-
-        jComboBoxAutores.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        jLabelPrecio.setText("Precio");
-
-        jTextFieldPrecio.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                jTextFieldPrecioKeyTyped(evt);
-            }
-        });
-
-        jLabelFecha.setText("Fecha");
 
         jTableCateg.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -139,42 +127,56 @@ public class DialogAniadirLibro extends javax.swing.JDialog {
 
         jLabelCategLibro.setText("Categorias del Libro");
 
+        jLabelAutor.setText("Autor");
+
+        jLabelPrecio.setText("Precio");
+
+        jLabelFecha.setText("Fecha");
+
+        jComboBoxAutores.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jTextFieldPrecio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldPrecioActionPerformed(evt);
+            }
+        });
+        jTextFieldPrecio.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTextFieldPrecioKeyTyped(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(108, 108, 108)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabelNom)
-                    .addComponent(jLabelAutor, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextFieldNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE)
-                    .addComponent(jComboBoxAutores, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTextFieldPrecio)
-                    .addComponent(jDateChooserFecha, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabelNom)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 118, Short.MAX_VALUE)
+                        .addComponent(jTextFieldTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabelAutor, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jComboBoxAutores, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jTextFieldPrecio)
+                            .addComponent(jDateChooserFecha, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE))))
                 .addGap(96, 96, 96))
             .addGroup(layout.createSequentialGroup()
+                .addGap(200, 200, 200)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(183, 183, 183)
-                        .addComponent(jLabelAniadir))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(199, 199, 199)
-                        .addComponent(jButtonAniadir)))
+                    .addComponent(jLabelTitle)
+                    .addComponent(jButtonModificar))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(57, 57, 57)
-                        .addComponent(jLabelCateg)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 213, Short.MAX_VALUE)
-                        .addComponent(jLabelCategLibro)
-                        .addGap(38, 38, 38))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -182,18 +184,24 @@ public class DialogAniadirLibro extends javax.swing.JDialog {
                             .addComponent(jButtonSelec, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(70, 70, 70)
+                        .addComponent(jLabelCateg)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabelCategLibro)
+                        .addGap(48, 48, 48)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addComponent(jLabelAniadir)
-                .addGap(65, 65, 65)
+                .addGap(19, 19, 19)
+                .addComponent(jLabelTitle)
+                .addGap(63, 63, 63)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelNom)
-                    .addComponent(jTextFieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelAutor)
@@ -206,7 +214,7 @@ public class DialogAniadirLibro extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabelFecha)
                     .addComponent(jDateChooserFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(40, 40, 40)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(46, 46, 46)
@@ -221,50 +229,47 @@ public class DialogAniadirLibro extends javax.swing.JDialog {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabelCateg)
                             .addComponent(jLabelCategLibro))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
-                .addComponent(jButtonAniadir)
-                .addGap(42, 42, 42))
+                .addGap(37, 37, 37)
+                .addComponent(jButtonModificar)
+                .addGap(18, 18, 18))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextFieldNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldNombreActionPerformed
+    private void jTextFieldTituloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldTituloActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldNombreActionPerformed
+    }//GEN-LAST:event_jTextFieldTituloActionPerformed
 
-    private void jButtonAniadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAniadirActionPerformed
-        if(jTextFieldNombre.getText().equals("") || jTextFieldPrecio.getText().equals("")){
+    private void jButtonModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModificarActionPerformed
+        if (jTextFieldTitulo.getText().equals("") || jTextFieldPrecio.getText().equals("")) {
             JOptionPane.showMessageDialog(null, "Compruebe que todos los campos esten rellenos");
-        }else{
-            if(jDateChooserFecha.getDate() == null){
+        } else {
+            if (jDateChooserFecha.getDate() == null) {
                 JOptionPane.showMessageDialog(null, "Seleccione una fecha");
-            }else{
-                Date fecha = jDateChooserFecha.getDate();
-                BigDecimal bD = new BigDecimal(jTextFieldPrecio.getText());
+            } else {
                 Set<Categoria> listaCateg = new HashSet<Categoria>();
                 Categoria categ;
                 for (int i = 0; i < modelCategLibro.getRowCount(); i++) {
                     categ = ctrlCateg.obtenerCategXId(modelCategLibro.getValueAt(i, 0));
                     listaCateg.add(categ);
                 }
+                BigDecimal bD = new BigDecimal(jTextFieldPrecio.getText());
                 Autor autor = ctrlAutor.obtenerAutorXNombre(jComboBoxAutores.getSelectedItem());
-                Libro libro = new Libro(jTextFieldNombre.getText(), fecha, bD, listaCateg, autor);
-                ctrlLibro.crear(libro);
-                this.dispose();
+                Libro libroMod = new Libro(jTextFieldTitulo.getText(), jDateChooserFecha.getDate(), bD, listaCateg, autor);
+                try {
+                    ctrlLibro.editar(libroMod);
+                    this.dispose();
+                } catch (NonexistentEntityException ex) {
+                    JOptionPane.showMessageDialog(null, ex);
+                    Logger.getLogger(DialogModLibro.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, ex);
+                    Logger.getLogger(DialogModLibro.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
-    }//GEN-LAST:event_jButtonAniadirActionPerformed
-
-    private void jTextFieldPrecioKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPrecioKeyTyped
-        char c = evt.getKeyChar();
-        String texto = jTextFieldPrecio.getText();
-        if(!Character.isDigit(c) && c != '.'){
-            evt.consume();
-        }else if(c == '.' && texto.contains(".")){
-            evt.consume();
-        }
-    }//GEN-LAST:event_jTextFieldPrecioKeyTyped
+    }//GEN-LAST:event_jButtonModificarActionPerformed
 
     private void jButtonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarActionPerformed
         if (jTableCategLibro.getSelectedRow() == -1) {
@@ -288,6 +293,20 @@ public class DialogAniadirLibro extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_jButtonSelecActionPerformed
 
+    private void jTextFieldPrecioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldPrecioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldPrecioActionPerformed
+
+    private void jTextFieldPrecioKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPrecioKeyTyped
+        char c = evt.getKeyChar();
+        String texto = jTextFieldPrecio.getText();
+        if (!Character.isDigit(c) && c != '.') {
+            evt.consume();
+        } else if (c == '.' && texto.contains(".")) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_jTextFieldPrecioKeyTyped
+
     /**
      * @param args the command line arguments
      */
@@ -305,14 +324,18 @@ public class DialogAniadirLibro extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DialogAniadirLibro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DialogModLibro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DialogAniadirLibro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DialogModLibro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DialogAniadirLibro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DialogModLibro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DialogAniadirLibro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DialogModLibro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -321,7 +344,7 @@ public class DialogAniadirLibro extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                DialogAniadirLibro dialog = new DialogAniadirLibro(new javax.swing.JFrame(), true);
+                DialogModLibro dialog = new DialogModLibro(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -334,35 +357,32 @@ public class DialogAniadirLibro extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonAniadir;
     private javax.swing.JButton jButtonEliminar;
+    private javax.swing.JButton jButtonModificar;
     private javax.swing.JButton jButtonSelec;
     private javax.swing.JComboBox<String> jComboBoxAutores;
     private com.toedter.calendar.JDateChooser jDateChooserFecha;
-    private javax.swing.JLabel jLabelAniadir;
     private javax.swing.JLabel jLabelAutor;
     private javax.swing.JLabel jLabelCateg;
     private javax.swing.JLabel jLabelCategLibro;
     private javax.swing.JLabel jLabelFecha;
     private javax.swing.JLabel jLabelNom;
     private javax.swing.JLabel jLabelPrecio;
+    private javax.swing.JLabel jLabelTitle;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTableCateg;
     private javax.swing.JTable jTableCategLibro;
-    private javax.swing.JTextField jTextFieldNombre;
     private javax.swing.JTextField jTextFieldPrecio;
+    private javax.swing.JTextField jTextFieldTitulo;
     // End of variables declaration//GEN-END:variables
 
-    //Metodo para rellenar el JComboBoc
-    public void rellenarJComboBox(){
-        jComboBoxAutores.removeAllItems();
-        for(Autor a : ctrlAutor.obtenerAllAutores()){
-            jComboBoxAutores.addItem(a.getNomAutor());
-        }
-    }
-    
     private void initTablas(List<Categoria> listaCategorias) {
+        for (Categoria c : libro.getCategoriasSet()) {
+            listaCategorias.remove(c);
+            Object[] fila = {c.getIdCategoria(), c.getNomCategoria()};
+            modelCategLibro.addRow(fila);
+        }
         for (Categoria c : listaCategorias) {
             Object[] fila = {c.getIdCategoria(), c.getNomCategoria()};
             modelCateg.addRow(fila);

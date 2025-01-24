@@ -58,9 +58,7 @@ public class Libro implements Serializable{
         this.precio = precio;
         this.categoriasSet = categoriasSet;
         this.autor = autor;
-    }
-    
-    
+    }  
 
     public Integer getIdLibros() {
         return idLibros;

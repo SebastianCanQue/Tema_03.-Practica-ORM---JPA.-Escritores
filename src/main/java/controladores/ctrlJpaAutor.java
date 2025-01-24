@@ -209,6 +209,7 @@ public class ctrlJpaAutor {
             em = getEntityManager();
             Query consulta = em.createNamedQuery("Autores.findByNomAutor");
             consulta.setParameter("nomAutor", nombre);
+            autor = (Autor)consulta.getSingleResult();
             autor.getLibrosSet().isEmpty();
         }finally{
             em.close();

@@ -23,13 +23,14 @@ public class DialogModAutor extends javax.swing.JDialog {
     //Modelos
     private DefaultTableModel modelLibros = new DefaultTableModel();
     private DefaultTableModel modelLibrosSelec = new DefaultTableModel();
-    private Autor autor;
+    private Autor autor = null;
 
     public DialogModAutor(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("Añadir un Autor");
+        rellenarComponentes();
         initModelosTablas();
         initTablas(ctrlLibro.obtenerAllLibros());
     }
@@ -321,4 +322,11 @@ public class DialogModAutor extends javax.swing.JDialog {
         jTableLibrosSelec.setModel(modelLibrosSelec);
     }
 
+    public void setAutor(Autor aut){
+        autor = aut;
+    }
+
+    private void rellenarComponentes() {
+        jTextFieldNombre.setText(autor.getNomAutor());
+    }
 }

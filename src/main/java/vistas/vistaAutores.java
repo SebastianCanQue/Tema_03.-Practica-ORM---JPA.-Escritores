@@ -279,7 +279,18 @@ public class VistaAutores extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuBajaMouseClicked
 
     private void jMenuModMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuModMouseClicked
-        
+        if(jTableAutores.getSelectedRow() == -1){
+            JOptionPane.showMessageDialog(null, "Seleccione un autor de la tabla para modificar");
+        }else{
+            Object idAutor = modelAutores.getValueAt(jTableAutores.getSelectedRow(), 0);
+            Autor autorVentana = ctrlAutores.obtenerAutorXId(idAutor);
+            System.out.println("a");
+            System.out.println(autorVentana);
+            DialogModAutor modAutor = new DialogModAutor(this, rootPaneCheckingEnabled);
+            System.out.println(".------------------------------------------------------------------------------------------------------------");
+            modAutor.setAutor(autorVentana);
+            modAutor.setVisible(true);
+        }
     }//GEN-LAST:event_jMenuModMouseClicked
 
     private void jMenuConsultarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuConsultarMouseClicked

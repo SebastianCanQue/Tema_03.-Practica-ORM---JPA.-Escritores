@@ -1,5 +1,6 @@
 package controladores;
 
+import controladores.exceptions.NonexistentEntityException;
 import jakarta.persistence.*;
 import java.util.*;
 import modelos.*;
@@ -45,6 +46,10 @@ public class ctrlJpaLibro {
             em.persist(libro);
             autor.getLibrosSet().add(libro);
             autor = (Autor) em.merge(autor);
+            for(Categoria c : libro.getCategoriasSet()){
+                c.getLibrosSet().add(libro);
+                c = (Categoria) em.merge(c);
+            }
             em.getTransaction().commit();
         }finally{
             em.close();
@@ -59,10 +64,74 @@ public class ctrlJpaLibro {
             em.getTransaction().begin();
             libro = em.getReference(Libro.class, libro.getIdLibros());
             libro.getAutor().getLibrosSet().remove(libro);
+            for(Categoria c : libro.getCategoriasSet()){
+                c.getLibrosSet().remove(libro);
+                c = (Categoria) em.merge(c);
+            }
             em.remove(libro);
             em.getTransaction().commit();
         }finally{
             em.close();
+        }
+    }
+    
+    //Metodo para editar un libro
+    public void editar(Libro libroMod) throws NonexistentEntityException, Exception{
+        EntityManager em = null;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            Libro antiguoLibro = em.find(Libro.class, libroMod.getIdLibros());
+            Autor autorAntiguo = antiguoLibro.getAutor();
+            Autor autorNuevo = libroMod.getAutor();
+            Set<Categoria> categoriasSetAntiguo = antiguoLibro.getCategoriasSet();
+            Set<Categoria> categoriasSetNuevo = libroMod.getCategoriasSet();
+            if (autorNuevo != null) {
+                autorNuevo = em.getReference(autorNuevo.getClass(), autorNuevo.getIdAutor());
+                libroMod.setAutor(autorNuevo);
+            }
+            Set<Categoria> attachedCategoriasSetNew = new HashSet<Categoria>();
+            for (Categoria categoriasSetNewCategoriaToAttach : categoriasSetNuevo) {
+                categoriasSetNewCategoriaToAttach = em.getReference(categoriasSetNewCategoriaToAttach.getClass(), categoriasSetNewCategoriaToAttach.getIdCategoria());
+                attachedCategoriasSetNew.add(categoriasSetNewCategoriaToAttach);
+            }
+            categoriasSetNuevo = attachedCategoriasSetNew;
+            libroMod.setCategoriasSet(categoriasSetNuevo);
+            libroMod = em.merge(libroMod);
+            if (autorAntiguo != null && !autorAntiguo.equals(autorNuevo)) {
+                autorAntiguo.getLibrosSet().remove(libroMod);
+                autorAntiguo = em.merge(autorAntiguo);
+            }
+            if (autorNuevo != null && !autorNuevo.equals(autorAntiguo)) {
+                autorNuevo.getLibrosSet().add(libroMod);
+                autorNuevo = em.merge(autorNuevo);
+            }
+            for (Categoria categoriasSetOldCategoria : categoriasSetAntiguo) {
+                if (!categoriasSetNuevo.contains(categoriasSetOldCategoria)) {
+                    categoriasSetOldCategoria.getLibrosSet().remove(libroMod);
+                    categoriasSetOldCategoria = em.merge(categoriasSetOldCategoria);
+                }
+            }
+            for (Categoria categoriasSetNewCategoria : categoriasSetNuevo) {
+                if (!categoriasSetAntiguo.contains(categoriasSetNewCategoria)) {
+                    categoriasSetNewCategoria.getLibrosSet().add(libroMod);
+                    categoriasSetNewCategoria = em.merge(categoriasSetNewCategoria);
+                }
+            }
+            em.getTransaction().commit();
+        } catch (Exception ex) {
+            String msg = ex.getLocalizedMessage();
+            if (msg == null || msg.length() == 0) {
+                Integer id = libroMod.getIdLibros();
+                if (obtenerLibroXId(id) == null) {
+                    throw new NonexistentEntityException("El libro con el id:  " + id + " no existe.");
+                }
+            }
+            throw ex;
+        } finally {
+            if (em != null) {
+                em.close();
+            }
         }
     }
     

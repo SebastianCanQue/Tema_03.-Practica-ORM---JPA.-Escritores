@@ -45,4 +45,18 @@ public class ctrlJpaCategoria {
         return listaCateg;
     }
     
+    //Metodo para obtener una categoria dado si id
+    public Categoria obtenerCategXId(Object id){
+        EntityManager em = null;
+        Categoria c = null;
+        try{
+            em = getEntityManager();
+            c = em.find(Categoria.class, id);
+            c.getLibrosSet().isEmpty();
+        }finally{
+            em.close();
+        }
+        return c;
+    }
+    
 }
